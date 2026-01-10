@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # 📚 KTU Archive
+=======
+# KTU Archive
+>>>>>>> cdfe3e41bde9681d4c5e8ac1be368bd83c567dbf
 
 Download previous-year KTU question papers.
 
