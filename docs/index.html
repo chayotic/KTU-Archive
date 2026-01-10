@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTU ARCHIVE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- top navigation -->
+<nav class="top-links">
+    <a href="https://github.com/chayotic">GITHUB</a>
+    <a href="#">CONTRIBUTE</a>
+</nav>
+
+<!-- main hero -->
+<main class="hero">
+    <div class="hero-container">
+
+        <h1>KTU ARCHIVE</h1>
+
+        <div class="search-card">
+
+            <!-- manual subject code input -->
+            <input
+                id="codeInput"
+                type="text"
+                placeholder="Enter Subject Code"
+            >
+
+            <!-- dropdowns + search -->
+            <div class="search-row">
+
+                <!-- semester dropdown -->
+                <div class="dropdown" id="semesterDropdown">
+                    <button class="dropdown-btn" type="button">
+                        <span>Select Semester</span>
+                        <i></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="option">Semester 1</div>
+                        <div class="option">Semester 2</div>
+                    </div>
+                </div>
+
+                <!-- subject dropdown -->
+                <div class="dropdown disabled" id="subjectDropdown">
+                    <button class="dropdown-btn" type="button" disabled>
+                        <span>Select Subject</span>
+                        <i></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <!-- populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- search / download -->
+                <button class="search-btn" id="searchBtn">
+                    SEARCH
+                </button>
+            </div>
+
+            <!-- Server Status -->
+            <div class="server-status" id="serverStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking server...</span>
+            </div>
+
+            <!-- Minimal Loading -->
+            <div class="loading hidden" id="loading">
+                <div class="loading-line"></div>
+                <div class="loading-text" id="loadingText"></div>
+            </div>
+
+            <!-- error message -->
+            <div class="error hidden" id="errorMsg">
+                Subject not found. Please check the subject code.
+            </div>
+
+            <!-- expandable papers list -->
+            <div class="papers hidden" id="papers">
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
