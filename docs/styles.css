@@ -77,6 +77,7 @@ body::before {
     text-align: center;
     margin-bottom: 40px;
     line-height: 1.1;
+    width: 100%;
 }
 
 /* card */
@@ -361,19 +362,6 @@ body::before {
     border-color: #ffffff !important;
 }
 
-/* Add checkmark to custom checkbox when selected */
-.paper-item.selected .custom-checkbox::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 5px;
-    height: 9px;
-    border: solid #050505;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-
 /* Custom scrollbar for the whole page */
 ::-webkit-scrollbar {
     width: 8px;
@@ -462,7 +450,7 @@ body::after {
     }
 }
 
-/* Minimal Dev Loading */
+/* Loading */
 .loading {
     margin-top: 14px;
     padding: 14px 16px;
@@ -535,22 +523,23 @@ body::after {
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-    /* Adjust top links */
     .top-links {
         top: 24px;
         left: 24px;
         gap: 24px;
     }
     
-    /* Adjust hero padding */
     .hero {
         padding: 120px 16px 40px 16px;
     }
-    
-    /* Smaller heading */
+  
     .hero h1 {
-        font-size: clamp(36px, 10vw, 48px);
+        font-size: clamp(36px, 12vw, 48px) !important;
         margin-bottom: 32px;
+        width: 100%;
+        text-align: center;
+        padding: 0 10px;
+        word-break: break-word;
     }
     
     /* Stack search row on mobile */
@@ -624,7 +613,6 @@ body::after {
 }
 
 @media (max-width: 480px) {
-    /* Even smaller adjustments for very small screens */
     .top-links {
         top: 16px;
         left: 16px;
@@ -640,8 +628,11 @@ body::after {
     }
     
     .hero h1 {
-        font-size: 32px;
+        font-size: 32px !important;
         margin-bottom: 24px;
+        letter-spacing: 0.06em; 
+        line-height: 1.2;
+        padding: 0 5px;
     }
     
     .search-card {
@@ -737,12 +728,10 @@ body::after {
     }
 }
 
-/* Add these to your existing styles.css */
-
 /* Better mobile font sizes */
 @media (max-width: 480px) {
     .hero h1 {
-        font-size: 28px !important;
+        font-size: 42px !important;
         letter-spacing: 0.04em;
     }
     

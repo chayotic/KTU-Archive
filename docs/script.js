@@ -3,7 +3,6 @@ let selectedPaperUrls = [];
 let activeMode = null;
 
 const codeInput = document.getElementById("codeInput");
-codeInput.addEventListener("focus", scrollToBottomSmooth);
 const semesterDropdown = document.getElementById("semesterDropdown");
 const subjectDropdown = document.getElementById("subjectDropdown");
 const subjectMenu = subjectDropdown.querySelector(".dropdown-menu");
@@ -68,13 +67,6 @@ function clearCodeInput() {
     hidePapers();
 }
 
-function scrollToBottomSmooth() {
-    window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: "smooth"
-    });
-}
-
 /* ---------- INPUT MODE ---------- */
 
 codeInput.addEventListener("input", () => {
@@ -94,7 +86,6 @@ document.querySelectorAll(".dropdown").forEach(dropdown => {
     btn.addEventListener("click", e => {
         if (btn.disabled) return;
         e.stopPropagation();
-        scrollToBottomSmooth();
         
         // Close any other open dropdowns
         document.querySelectorAll(".dropdown").forEach(d => {
@@ -200,7 +191,6 @@ searchBtn.addEventListener("click", () => {
 /* ---------- PAPERS ---------- */
 
 function renderPapers(subject) {
-    scrollToBottomSmooth();
     selectedPaperUrls = [];
     papersBox.innerHTML = "";
     papersBox.classList.remove("hidden");
