@@ -1,6 +1,6 @@
 # 📚 KTU Archive
 
-Download previous-year KTU question papers.
+Download **2024 Scheme** previous-year KTU question papers.
 
 ## Features
 - Subject code & semester-based search  
