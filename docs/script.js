@@ -18,7 +18,89 @@ const loadingText = document.getElementById("loadingText");
 const SERVER_BASE = "https://ktu-archive-backend.onrender.com";
 const serverStatus = document.getElementById("serverStatus");
 
+/* ---------- SERVER WAKING UP STATE ---------- */
+let isServerWakingUp = false;
+let wakeUpCheckCount = 0;
+const MAX_WAKE_UP_CHECKS = 30; // 30 * 5 seconds = 2.5 minutes max
+
+function showWakingUpStatus() {
+    serverStatus.className = "server-status waking";
+    serverStatus.querySelector(".status-text").textContent = "Server waking up...";
+    isServerWakingUp = true;
+    wakeUpCheckCount = 0;
+    
+    // Start checking periodically
+    checkServerWakeUp();
+}
+
+function checkServerWakeUp() {
+    if (!isServerWakingUp) return;
+    
+    if (wakeUpCheckCount >= MAX_WAKE_UP_CHECKS) {
+        // Too many attempts, give up
+        isServerWakingUp = false;
+        serverStatus.className = "server-status offline";
+        serverStatus.querySelector(".status-text").textContent = "Server offline - Failed to wake up";
+        return;
+    }
+    
+    wakeUpCheckCount++;
+    
+    // Check server status with a specific timeout
+    fetch(`${SERVER_BASE}/health`, {
+        method: 'GET',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+    })
+    .then(response => {
+        if (response.ok) {
+            // Server is back online!
+            isServerWakingUp = false;
+            serverStatus.className = "server-status online";
+            serverStatus.querySelector(".status-text").textContent = "Server online";
+        } else {
+            // Still waking up, check again in 5 seconds
+            setTimeout(checkServerWakeUp, 5000);
+        }
+    })
+    .catch(error => {
+        // Still waking up, check again in 5 seconds
+        setTimeout(checkServerWakeUp, 5000);
+    });
+}
+
+// Check if server is waking up (long timeout check)
+async function checkIfWakingUp() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
+        
+        const res = await fetch(`${SERVER_BASE}/health`, {
+            cache: "no-store",
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+            return { status: 'online', response: res };
+        } else {
+            return { status: 'offline', response: res };
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            // Request took too long - server is probably waking up
+            showWakingUpStatus();
+            return { status: 'waking' };
+        }
+        return { status: 'offline', error: error };
+    }
+}
+
 async function checkServerStatus() {
+    // If server is already in waking up state, don't check
+    if (isServerWakingUp) return false;
+    
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -30,15 +112,30 @@ async function checkServerStatus() {
         
         clearTimeout(timeoutId);
         
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+            throw new Error();
+        }
         
         serverStatus.className = "server-status online";
         serverStatus.querySelector(".status-text").textContent = "Server online";
         return true;
     } catch (error) {
-        serverStatus.className = "server-status offline";
-        serverStatus.querySelector(".status-text").textContent = "Server offline";
-        return false;
+        // Try a longer request to see if server is waking up
+        const wakeCheck = await checkIfWakingUp();
+        
+        if (wakeCheck.status === 'online') {
+            serverStatus.className = "server-status online";
+            serverStatus.querySelector(".status-text").textContent = "Server online";
+            return true;
+        } else if (wakeCheck.status === 'waking') {
+            // Already handled by checkIfWakingUp
+            return false;
+        } else {
+            // Server is offline
+            serverStatus.className = "server-status offline";
+            serverStatus.querySelector(".status-text").textContent = "Server offline";
+            return false;
+        }
     }
 }
 
@@ -250,17 +347,80 @@ function renderPapers(subject) {
     });
 }
 
-/* ---------- DOWNLOAD ---------- */
+/* ---------- DOWNLOAD WITH SERVER WAKE-UP ---------- */
+
+async function waitForServer(timeoutSeconds = 180) {
+    const startTime = Date.now();
+    const timeoutMs = timeoutSeconds * 1000;
+    
+    showLoading("Waiting for server to wake up...");
+    
+    while (Date.now() - startTime < timeoutMs) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const res = await fetch(`${SERVER_BASE}/health`, {
+                cache: "no-store",
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                return true;
+            }
+        } catch (error) {
+            // Server not ready yet
+        }
+        
+        // Wait 3 seconds before trying again
+        await sleep(3000);
+        
+        // Update loading text
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const remainingSeconds = Math.max(0, timeoutSeconds - elapsedSeconds);
+        showLoading(`Server waking up... (${remainingSeconds}s remaining)`);
+    }
+    
+    return false;
+}
 
 async function downloadSelectedFiles() {
     if (!selectedPaperUrls.length) return;
 
-    if (!serverStatus.classList.contains("online")) {
-        showLoading("Server offline");
-        setTimeout(() => loadingBox.classList.add("hidden"), 1500);
+    // Check initial server status
+    const serverOnline = await checkServerStatus();
+    
+    if (!serverOnline && !isServerWakingUp) {
+        showLoading("Server offline - try again in a few minutes");
+        setTimeout(() => loadingBox.classList.add("hidden"), 2000);
         return;
     }
+    
+    if (isServerWakingUp) {
+        showLoading("Server is waking up... Please wait");
+        
+        // Wait for server to wake up (max 3 minutes)
+        const serverReady = await waitForServer(180);
+        
+        if (!serverReady) {
+            showLoading("Server failed to wake up. Please try again.");
+            setTimeout(() => {
+                loadingBox.classList.add("hidden");
+                searchBtn.disabled = false;
+                searchBtn.textContent = "SEARCH";
+            }, 3000);
+            return;
+        }
+        
+        // Server is now online
+        serverStatus.className = "server-status online";
+        serverStatus.querySelector(".status-text").textContent = "Server online";
+        isServerWakingUp = false;
+    }
 
+    // Proceed with download
     searchBtn.textContent = "DOWNLOADING...";
     searchBtn.disabled = true;
     
