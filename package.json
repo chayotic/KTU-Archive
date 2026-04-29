@@ -1,0 +1,17 @@
+{
+  "name": "ktu-archive",
+  "version": "1.0.0",
+  "description": "Download 2024 Scheme Previous Year KTU Question Papers.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "Rohith Pai",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

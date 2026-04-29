@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTU Archive</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="top-actions">
+        <div class="action-card" id="notif-btn" style="display: none;">
+            <img src="/assets/buttons/bell-light.svg" alt="Notifications" class="action-icon">
+        </div>
+        <div class="action-card" id="theme-toggle-btn">
+            <img src="/assets/buttons/light-mode.svg" alt="Theme Toggle" class="action-icon" id="theme-icon">
+        </div>
+    </div>
+
+    <div class="container">
+    <h1 class="title">KTU Archive</h1>
+
+        <div class="section">
+            <h2 class="section-title">About the project</h2>
+            <p class="description">Download 2024 Scheme Previous Year Question Papers From APJ Abdul Kalam Technological University.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Experiencing issues?</h2>
+            <p class="description">Found a bug or missing a paper? Help us improve by <a href="https://github.com/chayotic/KTU-Archive/issues" target="_blank">reporting an issue</a>.</p>
+        </div>
+
+        <div class="input-container">
+            <input type="text" class="input-box" placeholder="Enter Subject Code / Subject Name" autocomplete="off">
+            <div class="clear-btn" id="clear-search-btn">✕</div>
+            <div class="suggestions-list" id="suggestions-list"></div>
+        </div>
+
+        <div class="dropdown-group">
+            <div class="custom-select" id="semester-select">
+                <div class="select-trigger">
+                    <div class="text-chevron-group">
+                        <span class="selected-text">Select Semester</span>
+                        <span class="chevron">▼</span>
+                    </div>
+                </div>
+                <div class="select-options"></div>
+            </div>
+
+            <div class="custom-select" id="subject-select">
+                <div class="select-trigger">
+                    <div class="text-chevron-group">
+                        <span class="selected-text">Select Subject</span>
+                        <span class="chevron">▼</span>
+                    </div>
+                </div>
+                <div class="select-options"></div>
+            </div>
+        </div>
+
+        <div class="results-container" id="results-container"></div>
+
+        <div class="action-stack">
+            <button class="search-button">
+                <span class="button-text">SEARCH</span>
+            </button>
+        </div>
+
+        <div class="button-group">
+            <a href="https://github.com/chayotic/KTU-Archive" target="_blank" class="secondary-button">
+                <img src="/assets/github/GitHub-light.svg" alt="GitHub" class="button-icon" id="github-icon">
+                <span class="button-text-label">GitHub</span>
+            </a>
+            <a href="https://www.buymeacoffee.com/rohithpai" target="_blank" class="secondary-button">
+                <img src="/assets/bmc/bmc-logo-light.svg" alt="Buy Me A Coffee" class="button-icon bmc-icon" id="bmc-logo">
+                <span class="button-text-label">Buy Me A Coffee</span>
+            </a>
+        </div>
+
+        <div class="status-card" id="server-status">
+            <img src="/assets/server-status/turning-on.svg" alt="Status" class="status-icon" id="status-icon" style="animation: rotate-icon 4s linear infinite;">
+            <span class="status-text" id="status-text">Checking Server Status...</span>
+        </div>
+
+        <div class="notif-feed" id="notif-feed">
+            <div class="notif-feed-header">
+                <span class="notif-feed-title">Latest Updates</span>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+        </div>
+
+
+    </div>
+<div id="toast" class="toast">Please select a semester first</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
