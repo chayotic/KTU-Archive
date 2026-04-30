@@ -456,7 +456,7 @@ async function performSearch() {
                             <div class="paper-item-left">
                                 <div class="paper-checkbox"></div>
                                 <div class="paper-title">
-                                    ${item.subject_name} <span class="paper-code">(${item.subject_code})</span>
+                                    ${item.subject_name}
                                 </div>
                             </div>
                             <div class="paper-date">${item.title}</div>
@@ -480,7 +480,7 @@ async function performSearch() {
                         <div class="paper-item-left">
                             <div class="paper-checkbox"></div>
                             <div class="paper-title">
-                                ${item.subject_name} <span class="paper-code">(${item.subject_code})</span>
+                                ${item.subject_name}
                             </div>
                         </div>
                         <div class="paper-date">${item.title}</div>
