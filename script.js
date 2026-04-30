@@ -741,7 +741,10 @@ function renderNotifications(notifications) {
                 <span class="notif-title">${n.title}</span>
             </div>
             <div class="notif-body">${n.body}</div>
-            <div class="notif-date">${date}</div>
+            <div class="notif-bottom">
+                <div class="notif-date">${date}</div>
+                ${n.url ? `<a href="${n.url}" target="_blank" class="notif-link">${n.url_title || 'View Link'} ↗</a>` : ''}
+            </div>
         `;
         
         notifList.appendChild(notifItem);
