@@ -199,6 +199,18 @@ function updateSuggestions(query) {
 
 async function initializeApp() {
     try {
+        try {
+            const statusResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/public/papers/app_status.json`);
+            if (statusResponse.ok) {
+                const statusData = await statusResponse.json();
+                if (statusData.maintenance === true) {
+                    throw new Error('MAINTENANCE_MODE');
+                }
+            }
+        } catch (statusError) {
+            if (statusError.message === 'MAINTENANCE_MODE') throw statusError;
+        }
+
         const response = await fetch(`${SUPABASE_URL}/rest/v1/papers?select=subject_code,subject_name,semester`, {
             headers: {
                 'apikey': SUPABASE_KEY,
@@ -236,8 +248,13 @@ async function initializeApp() {
         serverStatusIcon.src = "/assets/server-status/online.svg";
         serverStatusIcon.style.animation = "rotate-icon 4s linear infinite";
     } catch (error) {
-        showToast('Failed to connect to database.');
-        serverStatusText.textContent = "Server Is Offline";
+        if (error.message === 'MAINTENANCE_MODE') {
+            showToast('Server is currently under maintenance.');
+            serverStatusText.textContent = "Server Under Maintenance";
+        } else {
+            showToast('Failed to connect to database.');
+            serverStatusText.textContent = "Server Is Offline";
+        }
         serverStatusIcon.src = "/assets/server-status/offline.svg";
         serverStatusIcon.style.animation = "none";
     }
