@@ -260,6 +260,17 @@ async function initializeApp() {
     }
 }
 
+function updateInputPlaceholder() {
+    if (window.innerWidth <= 768) {
+        inputBox.placeholder = 'Enter Subject Code';
+    } else {
+        inputBox.placeholder = 'Enter Subject Code / Subject Name';
+    }
+}
+
+updateInputPlaceholder();
+window.addEventListener('resize', updateInputPlaceholder);
+
 initializeApp();
 
 inputBox.addEventListener('input', (e) => {
