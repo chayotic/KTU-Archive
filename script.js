@@ -200,7 +200,7 @@ function updateSuggestions(query) {
 async function initializeApp() {
     try {
         try {
-            const statusResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/public/papers/app_status.json`);
+            const statusResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/public/papers/app_status.json?t=${Date.now()}`);
             if (statusResponse.ok) {
                 const statusData = await statusResponse.json();
                 if (statusData.maintenance === true) {
