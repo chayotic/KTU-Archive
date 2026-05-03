@@ -399,6 +399,8 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     font-size: 12px;
     font-weight: 500;
     color: var(--color-dark);
+    line-height: 1;
+    transform: translateY(1px);
 }
 
 .action-stack {

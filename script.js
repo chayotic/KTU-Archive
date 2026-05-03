@@ -235,7 +235,7 @@ async function initializeApp() {
             }
         });
 
-        const semesterKeys = ["Semester 1", "Semester 2"]; 
+        const semesterKeys = Object.keys(semesterData).sort();
         const semesterOptions = semesterKeys.map(key => ({ key: key, label: key }));
         populateOptions(semesterSelect, semesterOptions, 'key', 'label', 'Select Semester');
 
