@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ktu-archive.vercel.app/sitemap.xml
