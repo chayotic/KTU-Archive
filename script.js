@@ -89,7 +89,7 @@ function attachOptionClickHandlers(selectElement) {
                 const selectedSemesterKey = value;
                 if (selectedSemesterKey && semesterData[selectedSemesterKey]) {
                     currentSemester = selectedSemesterKey;
-                    const subjects = semesterData[selectedSemesterKey];
+                    const subjects = semesterData[selectedSemesterKey].sort((a, b) => a.name.localeCompare(b.name));
                     const subjectOptions = subjects.map(subj => ({
                         name: subj.name,
                         code: subj.code,
@@ -367,14 +367,12 @@ async function performSearch() {
             const semesterTrigger = semesterSelect.querySelector('.selected-text');
             if (semesterTrigger) semesterTrigger.textContent = selectedSem;
             
-            const subjects = semesterData[selectedSem];
-            if (subjects) {
+                const subjects = semesterData[selectedSem].sort((a, b) => a.name.localeCompare(b.name));
                 const subjectOptions = subjects.map(subj => ({
                     name: subj.name,
                     code: subj.code
                 }));
                 populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
-            }
         }
     }
 

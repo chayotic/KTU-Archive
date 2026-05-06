@@ -77,7 +77,7 @@ html[data-theme="dark"] * {
     cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto;
 }
 
-body a, body a *, body button, body button *, body .select-trigger, body .select-trigger *, body .suggestion-item, body .custom-select div {
+body a, body a *, body button, body button *, body .select-trigger, body .select-trigger *, body .suggestion-item, body .suggestion-item *, body .custom-select div, body .clear-btn {
     cursor: pointer !important;
 }
 
