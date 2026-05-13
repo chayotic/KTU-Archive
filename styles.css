@@ -458,7 +458,7 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     justify-content: center;
     align-items: center;
     gap: 16px;
-    min-height: 84px;
+    height: 72px;
     opacity: 0;
     animation: simple-fade-in 0.4s ease forwards;
 }
@@ -530,7 +530,6 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     min-height: 72px;
     padding: 12px 24px;
     background-color: var(--color-light);
-    cursor: default;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     gap: 20px;
     border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
