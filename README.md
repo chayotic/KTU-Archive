@@ -27,20 +27,16 @@ git clone https://github.com/chayotic/KTU-Archive.git
 ```
 
 ### Support this Project
-<a href="https://www.buymeacoffee.com/rohithpai">
-  <img src="public/assets/bmc/bmc-button.svg" alt="Buy Me A Coffee" height="40">
+<a href="https://www.chai4.me/rohithpai">
+  <img src="public/assets/donate/chai4me.svg" alt="Chai4Me" width="100" height="36">
 </a>
 
 ---
 
 ### Credits
-- **Typography:** [Google Sans Code](https://fonts.google.com/specimen/Google+Sans+Code) by Google.
-- **Branding:** [GitHub](https://github.com/logos), [Buy Me A Coffee](https://www.buymeacoffee.com/brand).
+**Typography:** [Google Sans Code](https://fonts.google.com/specimen/Google+Sans+Code) by Google.
 
----
-Thanks to **[Amalshaheen](https://github.com/Amalshaheen)** for the **[KTU-PYQ-Scraper](https://github.com/Amalshaheen/ktu-PYQ-scaper)**.
-
-Special Thanks to **[JEC Library](http://202.88.225.92/xmlui)** for providing the papers.
+**Icons:** [Google Material Icons](https://fonts.google.com/icons).
 
 ---
 <sub>Developed for the student community.</sub>

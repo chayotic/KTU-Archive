@@ -633,7 +633,8 @@ const themeIcon = document.getElementById('theme-icon');
 const notifBtn = document.getElementById('notif-btn');
 const notifIcon = notifBtn ? notifBtn.querySelector('.action-icon') : null;
 const githubIcon = document.getElementById('github-icon');
-const bmcLogoHeader = document.getElementById('bmc-logo');
+const donateLogoHeader = document.getElementById('donate-logo');
+const upiCopyIcon = document.getElementById('upi-copy-icon');
 
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
@@ -643,12 +644,14 @@ function setTheme(theme) {
         if (themeIcon) themeIcon.src = '/assets/buttons/light-mode.svg';
         if (notifIcon) notifIcon.src = '/assets/buttons/bell-dark.svg';
         if (githubIcon) githubIcon.src = '/assets/github/GitHub-dark.svg';
-        if (bmcLogoHeader) bmcLogoHeader.src = '/assets/bmc/bmc-logo-dark.svg';
+        if (donateLogoHeader) donateLogoHeader.src = '/assets/donate/heart-light.svg';
+        if (upiCopyIcon) upiCopyIcon.src = '/assets/donate/copy-light.svg';
     } else {
         if (themeIcon) themeIcon.src = '/assets/buttons/dark-mode.svg';
         if (notifIcon) notifIcon.src = '/assets/buttons/bell-light.svg';
         if (githubIcon) githubIcon.src = '/assets/github/GitHub-light.svg';
-        if (bmcLogoHeader) bmcLogoHeader.src = '/assets/bmc/bmc-logo-light.svg';
+        if (donateLogoHeader) donateLogoHeader.src = '/assets/donate/heart-dark.svg';
+        if (upiCopyIcon) upiCopyIcon.src = '/assets/donate/copy-dark.svg';
     }
 }
 
@@ -774,5 +777,45 @@ function renderNotifications(notifications) {
         `;
         
         notifList.appendChild(notifItem);
+    });
+}
+
+const donateBtn = document.getElementById('donate-btn');
+const donateModal = document.getElementById('donate-modal');
+const copyUpiBtn = document.getElementById('copy-upi-btn');
+
+if (donateBtn && donateModal) {
+    donateBtn.addEventListener('click', () => {
+        donateModal.classList.add('active');
+    });
+}
+
+if (donateModal) {
+    donateModal.addEventListener('click', (e) => {
+        if (e.target === donateModal) {
+            donateModal.classList.remove('active');
+        }
+    });
+}
+
+if (copyUpiBtn) {
+    copyUpiBtn.addEventListener('click', () => {
+        const upiId = 'rohithpai@sib';
+        navigator.clipboard.writeText(upiId).then(() => {
+            showToast('UPI ID Copied');
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = upiId;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('UPI ID Copied');
+            } catch (err) {
+                showToast('Failed to copy UPI ID');
+            }
+            document.body.removeChild(textarea);
+        });
     });
 }
