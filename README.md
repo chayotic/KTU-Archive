@@ -38,5 +38,7 @@ git clone https://github.com/chayotic/KTU-Archive.git
 
 **Icons:** [Google Material Icons](https://fonts.google.com/icons).
 
+**Notification API:** [KTU Announcements API](https://github.com/ratherpixelate/ktu-announcements-api)
+
 ---
 <sub>Developed for the student community.</sub>

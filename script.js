@@ -1,6 +1,5 @@
 let semesterData = {};
 let allSubjects = [];
-let currentSemester = null;
 let selectedPapers = [];
 
 const semesterSelect = document.getElementById('semester-select');
@@ -46,9 +45,6 @@ function populateOptions(selectElement, optionsArray, valueKey, labelKey, defaul
         const optionDiv = document.createElement('div');
         optionDiv.textContent = item[labelKey];
         optionDiv.setAttribute('data-value', item[valueKey]);
-        if (item.downloads) {
-            optionDiv.setAttribute('data-full', JSON.stringify(item));
-        }
         optionsContainer.appendChild(optionDiv);
     });
 
@@ -68,11 +64,6 @@ function attachOptionClickHandlers(selectElement) {
             const text = option.textContent;
             selectedTextSpan.textContent = text;
             selectElement.setAttribute('data-selected-value', value);
-            if (option.getAttribute('data-full')) {
-                selectElement.setAttribute('data-full', option.getAttribute('data-full'));
-            } else {
-                selectElement.removeAttribute('data-full');
-            }
             selectElement.querySelectorAll('.select-options div').forEach(opt => opt.classList.remove('selected'));
             option.classList.add('selected');
             selectElement.classList.remove('open');
@@ -88,18 +79,15 @@ function attachOptionClickHandlers(selectElement) {
             if (selectElement.id === 'semester-select') {
                 const selectedSemesterKey = value;
                 if (selectedSemesterKey && semesterData[selectedSemesterKey]) {
-                    currentSemester = selectedSemesterKey;
                     const subjects = semesterData[selectedSemesterKey].sort((a, b) => a.name.localeCompare(b.name));
                     const subjectOptions = subjects.map(subj => ({
                         name: subj.name,
                         code: subj.code,
-                        downloads: subj.downloads
                     }));
                     populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
                     const subjectTrigger = subjectSelect.querySelector('.select-trigger .selected-text');
                     subjectTrigger.textContent = 'Select Subject';
                     subjectSelect.setAttribute('data-selected-value', '');
-                    subjectSelect.removeAttribute('data-full');
                 } else {
                     const subjectOptionsContainer = subjectSelect.querySelector('.select-options');
                     subjectOptionsContainer.innerHTML = '';
@@ -111,7 +99,6 @@ function attachOptionClickHandlers(selectElement) {
                     const subjectTrigger = subjectSelect.querySelector('.select-trigger .selected-text');
                     subjectTrigger.textContent = 'Select Subject';
                     subjectSelect.setAttribute('data-selected-value', '');
-                    subjectSelect.removeAttribute('data-full');
                 }
             }
         };
@@ -177,7 +164,6 @@ function updateSuggestions(query) {
                 const subjectOptions = subjectsForTargetSem.map(s => ({ 
                     code: s.code, 
                     name: s.name, 
-                    downloads: s.downloads 
                 }));
                 populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
                 
@@ -659,7 +645,7 @@ const savedTheme = localStorage.getItem('theme') || 'light';
 setTheme(savedTheme);
 
 if (themeToggleBtn) {
-    function toggleTheme(event) {
+    function toggleTheme() {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         const newTheme = isDark ? 'light' : 'dark';
 
@@ -725,39 +711,44 @@ if (notifBtn) {
 
 async function fetchNotifications() {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/notifications?select=*&order=posted_at.desc`, {
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`
-            }
-        });
-        const allNotifs = await response.json();
+        const response = await fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?scheme=2024');
+        if (!response.ok) throw new Error('API server returned error status');
         
-        const now = new Date();
-        const activeNotifs = allNotifs.filter(n => {
-            if (n.expires_after_days === null) return true;
-            const expiry = new Date(n.posted_at);
-            expiry.setDate(expiry.getDate() + n.expires_after_days);
-            return now < expiry;
-        });
-
-        renderNotifications(activeNotifs);
+        const result = await response.json();
+        if (result && result.success && Array.isArray(result.data)) {
+            renderNotifications(result.data);
+            return;
+        }
+        throw new Error('API response format invalid');
     } catch (error) {
-        console.error('Error fetching notifications:', error);
+        console.warn('Failed to fetch announcements from Render API, falling back to local notifications.json:', error);
+        try {
+            const response = await fetch('/notifications.json');
+            const result = await response.json();
+            if (result && result.success && Array.isArray(result.data)) {
+                renderNotifications(result.data);
+            }
+        } catch (fallbackError) {
+            console.error('Failed to load announcements from fallback JSON:', fallbackError);
+            if (notifFeed) notifFeed.style.display = 'none';
+            if (notifBtn) notifBtn.style.display = 'none';
+        }
     }
 }
 
 function renderNotifications(notifications) {
-    if (notifications.length === 0) {
+    if (!notifications || notifications.length === 0) {
         if (notifFeed) notifFeed.style.display = 'none';
+        if (notifBtn) notifBtn.style.display = 'none';
         return;
     }
 
     if (notifFeed) notifFeed.style.display = 'block';
+    if (notifBtn) notifBtn.style.display = 'flex';
 
     notifList.innerHTML = '';
     notifications.forEach(n => {
-        const date = new Date(n.posted_at).toLocaleDateString('en-IN', {
+        const date = new Date(n.date).toLocaleDateString('en-IN', {
             day: '2-digit',
             month: '2-digit',
             year: '2-digit'
@@ -765,14 +756,25 @@ function renderNotifications(notifications) {
 
         const notifItem = document.createElement('div');
         notifItem.className = 'notif-item';
+        
+        let attachmentsHtml = '';
+        if (Array.isArray(n.attachments) && n.attachments.length > 0) {
+            attachmentsHtml = n.attachments.map(att => {
+                const downloadUrl = `https://ktu-announcements-api-wxk8.onrender.com/download/${att.encrypt_id}`;
+                return `<a href="${downloadUrl}" target="_self" class="notif-link" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none;"><span>Attachment</span><img class="notif-download-icon" alt="Download"></a>`;
+            }).join(' ');
+        }
+
+        const bodyContent = n.description_html || `<p>${n.description_text || n.title}</p>`;
+
         notifItem.innerHTML = `
             <div class="notif-item-top">
                 <span class="notif-title">${n.title}</span>
             </div>
-            <div class="notif-body">${n.body}</div>
+            <div class="notif-body">${bodyContent}</div>
             <div class="notif-bottom">
                 <div class="notif-date">${date}</div>
-                ${n.url ? `<a href="${n.url}" target="_blank" class="notif-link">${n.url_title || 'View Link'} ↗</a>` : ''}
+                ${attachmentsHtml}
             </div>
         `;
         

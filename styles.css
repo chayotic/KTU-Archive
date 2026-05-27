@@ -1,4 +1,4 @@
-::view-transition-old(root),
+    ::view-transition-old(root),
 ::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
@@ -382,14 +382,6 @@ a:hover {
     to { transform: rotate(-360deg) translateZ(0); }
 }
 
-.action-icon {
-    width: 18px;
-    height: auto;
-    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    pointer-events: none;
-    transform: rotate(0) translateZ(0);
-}
-
 body, .container, .status-card, .input-box, .custom-select .select-trigger, .secondary-button, .title, .section-title, .description, .results-card, .paper-item, .paper-title, .paper-code, .paper-date, .paper-checkbox {
     transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, opacity 0.4s ease;
 }
@@ -595,23 +587,6 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     background-color: var(--color-dark);
 }
 
-@keyframes material-form-in {
-    from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.99);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-
-@keyframes slide-in-top {
-    from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .secondary-button {
     flex: 1;
     height: 72px;
@@ -658,7 +633,6 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     background-color: var(--color-dark);
     border: 1.5px solid var(--color-dark);
     border-radius: 12px;
-    cursor: default;
     position: relative;
     overflow: hidden;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -893,7 +867,17 @@ body::after {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
+    position: relative;
+}
+
+.notif-feed-header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.1);
 }
 
 .notif-feed-title {
@@ -914,7 +898,6 @@ body::after {
     flex-direction: column;
     gap: 6px;
     padding: 18px 20px;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.08);
     position: relative;
     user-select: text !important;
     -webkit-user-select: text !important;
@@ -922,8 +905,18 @@ body::after {
     background-color: transparent;
 }
 
-.notif-item:last-child {
-    border-bottom: none;
+.notif-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.08);
+}
+
+.notif-item:last-child::after {
+    display: none;
 }
 
 .notif-item-top {
@@ -975,22 +968,23 @@ body::after {
     font-family: 'Google Sans Code', monospace;
     font-size: 11px;
     font-weight: 600;
-    color: #6442d6;
+    color: var(--color-dark);
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 4px;
-    transition: opacity 0.2s ease;
 }
 
-.notif-link:hover {
-    opacity: 0.7;
+.notif-download-icon {
+    height: 12px;
+    width: auto;
+    content: url('/assets/buttons/download-dark.svg');
 }
 
-[data-theme="dark"] .notif-link {
-    color: #9d7fff;
+[data-theme="dark"] .notif-download-icon {
+    content: url('/assets/buttons/download-light.svg');
 }
 
 @media (max-width: 768px) {
@@ -1125,21 +1119,6 @@ body::after {
     color: var(--color-dark);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-}
-
-.modal-close-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: var(--color-dark);
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-    padding: 4px;
-}
-
-.modal-close-btn:hover {
-    opacity: 1;
 }
 
 .modal-body {
