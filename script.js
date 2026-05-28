@@ -753,33 +753,43 @@ function renderNotifications(notifications) {
             month: '2-digit',
             year: '2-digit'
         });
-
-        const notifItem = document.createElement('div');
-        notifItem.className = 'notif-item';
+        
+        const bodyContent = n.description_html || `<p>${escapeHtml(n.description_text || n.title)}</p>`;
         
         let attachmentsHtml = '';
         if (Array.isArray(n.attachments) && n.attachments.length > 0) {
-            attachmentsHtml = n.attachments.map(att => {
+            const attachmentLinks = n.attachments.map(att => {
                 const downloadUrl = `https://ktu-announcements-api-wxk8.onrender.com/download/${att.encrypt_id}`;
-                return `<a href="${downloadUrl}" target="_self" class="notif-link" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none;"><span>Attachment</span><img class="notif-download-icon" alt="Download"></a>`;
-            }).join(' ');
+                const fileName = att.filename || 'Attachment';
+                const shortName = fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
+                return `<a href="${downloadUrl}" target="_self" class="notif-attachment-link">
+                            ${escapeHtml(shortName)}
+                            <img class="notif-download-icon" alt="">
+                        </a>`;
+            }).join('');
+            attachmentsHtml = `<div class="notif-attachments">${attachmentLinks}</div>`;
         }
-
-        const bodyContent = n.description_html || `<p>${n.description_text || n.title}</p>`;
-
+        
+        const notifItem = document.createElement('div');
+        notifItem.className = 'notif-item';
         notifItem.innerHTML = `
-            <div class="notif-item-top">
-                <span class="notif-title">${n.title}</span>
-            </div>
+            <div class="notif-title">${escapeHtml(n.title)}</div>
             <div class="notif-body">${bodyContent}</div>
-            <div class="notif-bottom">
-                <div class="notif-date">${date}</div>
+            <div class="notif-row">
+                <span class="notif-date">${date}</span>
                 ${attachmentsHtml}
             </div>
         `;
         
         notifList.appendChild(notifItem);
     });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 const donateBtn = document.getElementById('donate-btn');
