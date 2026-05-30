@@ -228,7 +228,7 @@ async function initializeApp() {
         initCustomSelect(semesterSelect);
         initCustomSelect(subjectSelect);
         
-        await fetchNotifications();
+        fetchNotifications();
 
         serverStatusText.textContent = "Server Is Online";
         serverStatusIcon.src = "/assets/server-status/online.svg";
@@ -677,7 +677,6 @@ if (themeToggleBtn) {
         });
 
         transition.ready.then(() => {
-            document.documentElement.style.overflow = 'hidden';
             document.documentElement.animate(
                 {
                     clipPath: [
@@ -716,7 +715,8 @@ async function fetchNotifications() {
         
         const result = await response.json();
         if (result && result.success && Array.isArray(result.data)) {
-            renderNotifications(result.data);
+            const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            renderNotifications(sorted);
             return;
         }
         throw new Error('API response format invalid');
@@ -726,7 +726,8 @@ async function fetchNotifications() {
             const response = await fetch('/notifications.json');
             const result = await response.json();
             if (result && result.success && Array.isArray(result.data)) {
-                renderNotifications(result.data);
+                const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderNotifications(sorted);
             }
         } catch (fallbackError) {
             console.error('Failed to load announcements from fallback JSON:', fallbackError);
@@ -744,7 +745,7 @@ function renderNotifications(notifications) {
     }
 
     if (notifFeed) notifFeed.style.display = 'block';
-    if (notifBtn) notifBtn.style.display = 'flex';
+    if (notifBtn) notifBtn.style.display = 'flex-start';
 
     notifList.innerHTML = '';
     notifications.forEach(n => {
