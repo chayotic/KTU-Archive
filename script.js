@@ -549,7 +549,7 @@ async function performSearch() {
         loaderContainer.innerHTML = `
             <div class="fade-wrapper">
                 ${papers.map(item => `
-                    <div class="paper-item" onclick="togglePaperSelection('${item.url}', this)" data-url="${item.url}">
+                    <div class="paper-item" onclick="togglePaperSelection('${item.url}', this)" data-url="${item.url}" data-subject-code="${item.subject_code}">
                         <div class="paper-item-left">
                             <div class="paper-checkbox"></div>
                             <div class="paper-title">
@@ -645,10 +645,11 @@ function downloadSelectedPapers() {
             
             if (i === papersToDownload.length - 1) {
                 setTimeout(() => {
-                    if (paperCard && savedHtml) {
-                        paperCard.innerHTML = savedHtml;
-                        paperCard.classList.remove('loading-container');
-                    }
+        if (paperCard && savedHtml) {
+            paperCard.innerHTML = savedHtml;
+            paperCard.classList.remove('loading-container');
+            paperCard.querySelectorAll('.paper-item.selected').forEach(el => el.classList.remove('selected'));
+        }
                     
                     selectedPapers = [];
                     updateDownloadButton();
@@ -670,29 +671,53 @@ async function downloadAsZip() {
         return;
     }
 
+    const paperCard = resultsContainer.querySelector('.results-card.paper-list');
+    const savedHtml = paperCard ? paperCard.getAttribute('data-paper-html') : null;
+    const firstPaper = paperCard ? paperCard.querySelector('.paper-item[data-subject-code]') : null;
+    const subjectCode = firstPaper ? firstPaper.dataset.subjectCode : 'KTU-Papers';
+
+    if (paperCard) {
+        paperCard.innerHTML = `
+            <div class="loading-text" style="margin-bottom: 24px;">ZIPPING PAPERS</div>
+            <div class="progress-bar-container" style="width: 80%;">
+                <div class="progress-bar"></div>
+            </div>
+        `;
+        paperCard.classList.add('loading-container');
+    }
+
     try {
         const zip = new JSZip();
 
-        showToast('Creating ZIP...');
-
-        for (const url of selectedPapers) {
+        for (let i = 0; i < selectedPapers.length; i++) {
+            const url = selectedPapers[i];
             const response = await fetch(url);
             const blob = await response.blob();
             const filename = url.split('/').pop().split('?')[0] || 'KTU-Paper.pdf';
             zip.file(filename, blob);
+
+            if (paperCard) {
+                const loadingText = paperCard.querySelector('.loading-text');
+                if (loadingText) {
+                    loadingText.textContent = `ZIPPING ${i + 1}/${selectedPapers.length} PAPERS`;
+                }
+            }
         }
 
         const content = await zip.generateAsync({ type: 'blob' });
         const blobUrl = window.URL.createObjectURL(content);
         const a = document.createElement('a');
         a.href = blobUrl;
-        a.download = 'KTU-Papers.zip';
+        a.download = `${subjectCode}.zip`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(blobUrl);
         document.body.removeChild(a);
 
-        showToast('ZIP downloaded');
+        if (paperCard && savedHtml) {
+            paperCard.innerHTML = savedHtml;
+            paperCard.classList.remove('loading-container');
+        }
 
         zipEnabled = false;
         selectedPapers = [];
@@ -702,6 +727,10 @@ async function downloadAsZip() {
     } catch (err) {
         console.error(err);
         showToast('Failed to create ZIP');
+        if (paperCard && savedHtml) {
+            paperCard.innerHTML = savedHtml;
+            paperCard.classList.remove('loading-container');
+        }
     }
 }
 
