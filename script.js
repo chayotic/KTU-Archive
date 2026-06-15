@@ -1,6 +1,9 @@
+import JSZip from 'jszip';
+
 let semesterData = {};
 let allSubjects = [];
 let selectedPapers = [];
+let zipEnabled = false;
 
 const semesterSelect = document.getElementById('semester-select');
 const subjectSelect = document.getElementById('subject-select');
@@ -317,13 +320,71 @@ function togglePaperSelection(paperUrl, element) {
     }
 
     updateDownloadButton();
+    updateSelectAllButton();
 }
 
 function updateDownloadButton() {
     if (selectedPapers.length > 0) {
-        searchButtonText.textContent = `DOWNLOAD (${selectedPapers.length})`;
+        searchButtonText.textContent = zipEnabled
+            ? `DOWNLOAD AS ZIP (${selectedPapers.length})`
+            : `DOWNLOAD (${selectedPapers.length})`;
     } else {
         searchButtonText.textContent = "SEARCH";
+    }
+}
+
+function toggleSelectAll() {
+    const paperItems = Array.from(resultsContainer.querySelectorAll('.paper-item'));
+    const paperUrls = paperItems.map(el => el.dataset.url).filter(Boolean);
+    const allSelected = paperUrls.length > 0 && selectedPapers.length === paperUrls.length;
+
+    if (allSelected) {
+        paperItems.forEach(el => el.classList.remove('selected'));
+        selectedPapers = [];
+    } else {
+        paperItems.forEach(el => el.classList.add('selected'));
+        selectedPapers = [...paperUrls];
+    }
+
+    updateSelectAllButton();
+    updateDownloadButton();
+}
+
+function updateSelectAllButton() {
+    const selectAllBtn = document.getElementById('select-all-btn');
+    if (!selectAllBtn) return;
+
+    const paperItems = resultsContainer.querySelectorAll('.paper-item');
+    const allSelected = paperItems.length > 0 && selectedPapers.length === paperItems.length;
+
+    const textEl = document.getElementById('select-all-text');
+    if (textEl) {
+        textEl.textContent = allSelected ? 'Deselect All' : 'Select All';
+    }
+    if (allSelected) {
+        selectAllBtn.classList.add('selected');
+    } else {
+        selectAllBtn.classList.remove('selected');
+    }
+}
+
+function toggleZipMode() {
+    zipEnabled = !zipEnabled;
+    updateZipButton();
+    updateDownloadButton();
+}
+
+function updateZipButton() {
+    const zipBtn = document.getElementById('download-zip-btn');
+    if (!zipBtn) return;
+
+    const checkbox = zipBtn.querySelector('.btn-checkbox');
+    const text = zipBtn.querySelector('.zip-btn-text');
+    if (checkbox) {
+        checkbox.style.backgroundColor = zipEnabled ? 'var(--color-dark)' : 'transparent';
+    }
+    if (text) {
+        text.textContent = 'Convert to ZIP';
     }
 }
 
@@ -488,7 +549,7 @@ async function performSearch() {
         loaderContainer.innerHTML = `
             <div class="fade-wrapper">
                 ${papers.map(item => `
-                    <div class="paper-item" onclick="togglePaperSelection('${item.url}', this)">
+                    <div class="paper-item" onclick="togglePaperSelection('${item.url}', this)" data-url="${item.url}">
                         <div class="paper-item-left">
                             <div class="paper-checkbox"></div>
                             <div class="paper-title">
@@ -503,6 +564,29 @@ async function performSearch() {
         
         loaderContainer.className = 'results-card paper-list';
         loaderContainer.setAttribute('data-paper-html', loaderContainer.innerHTML);
+
+        const existingActions = resultsContainer.querySelector('.paper-actions');
+        if (existingActions) existingActions.remove();
+
+        zipEnabled = false;
+
+        if (papers.length > 2) {
+            const actions = document.createElement('div');
+            actions.className = 'paper-actions';
+            actions.innerHTML = `
+                <div class="action-btn" id="select-all-btn">
+                    <div class="btn-checkbox" id="select-all-checkbox"></div>
+                    <span id="select-all-text">Select All</span>
+                </div>
+                <div class="action-btn" id="download-zip-btn">
+                    <div class="btn-checkbox"></div>
+                    <span class="zip-btn-text">Convert to ZIP</span>
+                </div>
+            `;
+            resultsContainer.appendChild(actions);
+            document.getElementById('select-all-btn').addEventListener('click', toggleSelectAll);
+            document.getElementById('download-zip-btn').addEventListener('click', toggleZipMode);
+        }
 
         lastSearchKey = currentKey;
     } catch (e) {
@@ -568,13 +652,61 @@ function downloadSelectedPapers() {
                     
                     selectedPapers = [];
                     updateDownloadButton();
+                    updateSelectAllButton();
                 }, 2000); 
             }
         }, PREP_TIME + (i * 800));
     });
 }
 
+async function downloadAsZip() {
+    if (selectedPapers.length === 0) {
+        showToast('Select papers first');
+        return;
+    }
+
+    if (serverStatusText.textContent !== "Server Is Online") {
+        showToast("Server is currently offline. Please try again later.");
+        return;
+    }
+
+    try {
+        const zip = new JSZip();
+
+        showToast('Creating ZIP...');
+
+        for (const url of selectedPapers) {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const filename = url.split('/').pop().split('?')[0] || 'KTU-Paper.pdf';
+            zip.file(filename, blob);
+        }
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        const blobUrl = window.URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'KTU-Papers.zip';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+
+        showToast('ZIP downloaded');
+
+        zipEnabled = false;
+        selectedPapers = [];
+        updateDownloadButton();
+        updateSelectAllButton();
+        updateZipButton();
+    } catch (err) {
+        console.error(err);
+        showToast('Failed to create ZIP');
+    }
+}
+
 window.togglePaperSelection = togglePaperSelection;
+window.toggleSelectAll = toggleSelectAll;
 
 if (searchButton) {
     searchButton.addEventListener('click', function(e) {
@@ -602,7 +734,11 @@ if (searchButton) {
             animationActive = false;
             
             if (selectedPapers.length > 0) {
-                downloadSelectedPapers();
+                if (zipEnabled) {
+                    downloadAsZip();
+                } else {
+                    downloadSelectedPapers();
+                }
             } else {
                 performSearch();
             }
@@ -709,6 +845,17 @@ if (notifBtn) {
 }
 
 async function fetchNotifications() {
+    const cached = localStorage.getItem('ktu_notifications');
+    if (cached) {
+        try {
+            const parsed = JSON.parse(cached);
+            if (parsed && Array.isArray(parsed.data)) {
+                const sorted = parsed.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderNotifications(sorted);
+            }
+        } catch (_) {}
+    }
+
     try {
         const response = await fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?scheme=2024');
         if (!response.ok) throw new Error('API server returned error status');
@@ -716,23 +863,18 @@ async function fetchNotifications() {
         const result = await response.json();
         if (result && result.success && Array.isArray(result.data)) {
             const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('ktu_notifications', JSON.stringify({ data: sorted }));
             renderNotifications(sorted);
             return;
         }
         throw new Error('API response format invalid');
     } catch (error) {
-        console.warn('Failed to fetch announcements from Render API, falling back to local notifications.json:', error);
-        try {
-            const response = await fetch('/notifications.json');
-            const result = await response.json();
-            if (result && result.success && Array.isArray(result.data)) {
-                const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                renderNotifications(sorted);
-            }
-        } catch (fallbackError) {
-            console.error('Failed to load announcements from fallback JSON:', fallbackError);
+        if (!cached) {
+            console.error('Failed to fetch notifications and no cache available:', error);
             if (notifFeed) notifFeed.style.display = 'none';
             if (notifBtn) notifBtn.style.display = 'none';
+        } else {
+            console.warn('Failed to fetch fresh notifications, using cached data:', error);
         }
     }
 }

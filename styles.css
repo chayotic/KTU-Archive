@@ -247,15 +247,25 @@ a:hover {
     padding: 12px 16px;
     cursor: pointer;
     font-family: 'Google Sans Code', monospace;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
+    position: relative;
     transition: background-color 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.suggestion-item:last-child {
-    border-bottom: none;
+.suggestion-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.1);
+}
+
+.suggestion-item:last-child::after {
+    display: none;
 }
 
 .suggestion-item:hover {
@@ -524,11 +534,68 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     background-color: var(--color-light);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     gap: 20px;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
+    position: relative;
 }
 
-.paper-item:last-child {
-    border-bottom: none;
+.paper-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.1);
+}
+
+.paper-item:last-child::after {
+    display: none;
+}
+
+.paper-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    flex: 1;
+    border-radius: 8px;
+    border: 1.5px solid var(--color-dark);
+    background-color: var(--color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 16px 12px;
+    font-family: 'Google Sans Code', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-dark);
+    overflow: hidden;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.action-btn:hover {
+    background-color: rgba(17, 17, 17, 0.03);
+}
+
+.action-btn:active {
+    background-color: rgba(17, 17, 17, 0.05);
+}
+
+.btn-checkbox {
+    width: 12px;
+    height:12px;
+    border: 2px solid var(--color-dark);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-right: 4px;
+    transition: background-color 0.2s;
+}
+
+.action-btn.selected .btn-checkbox {
+    background-color: var(--color-dark);
 }
 
 .paper-item-left {
@@ -539,10 +606,6 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
 }
 
 .paper-item:hover {
-    background-color: var(--color-accent);
-}
-
-.paper-item.selected {
     background-color: var(--color-accent);
 }
 
@@ -575,10 +638,10 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
 
 .paper-checkbox {
     position: relative;
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
     border: 2px solid var(--color-dark);
-    border-radius: 4px;
+    border-radius: 2px;
     background-color: transparent;
     flex-shrink: 0;
 }
@@ -772,12 +835,22 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     padding: 12px 16px;
     cursor: pointer;
     transition: background-color 0.2s;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
+    position: relative;
     color: var(--color-dark);
 }
 
-.select-options div:last-child {
-    border-bottom: none;
+.select-options div::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.04);
+}
+
+.select-options div:last-child::after {
+    display: none;
 }
 
 .select-options div:hover {
@@ -862,7 +935,17 @@ body::after {
 
 .notif-feed-header {
     padding: 14px 20px;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.1);
+    position: relative;
+}
+
+.notif-feed-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.1);
 }
 
 .notif-feed-title {
@@ -881,11 +964,21 @@ body::after {
 
 .notif-item {
     padding: 20px;
-    border-bottom: 1px solid rgba(var(--color-dark-rgb), 0.08);
+    position: relative;
 }
 
-.notif-item:last-child {
-    border-bottom: none;
+.notif-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.08);
+}
+
+.notif-item:last-child::after {
+    display: none;
 }
 
 .notif-title {
