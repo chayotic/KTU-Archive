@@ -570,7 +570,7 @@ async function performSearch() {
 
         zipEnabled = false;
 
-        if (papers.length > 2) {
+        if (papers.length > 1) {
             const actions = document.createElement('div');
             actions.className = 'paper-actions';
             actions.innerHTML = `
