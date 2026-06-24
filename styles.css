@@ -116,15 +116,21 @@ a:hover {
     max-width: 580px;
     margin: 0 auto;
     padding: 40px 20px;
+    position: relative;
 }
 
 .title {
     font-family: 'Google Sans Code', monospace;
     font-weight: 500;
-    margin-top: 75px;
+    margin-top: 48px;
     margin-bottom: 8px;
     font-size: 24px;
     color: var(--color-dark);
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
 }
 
 .section {
@@ -148,6 +154,103 @@ a:hover {
     color: var(--color-dark);
     opacity: 0.9;
 }
+
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 40px;
+}
+
+.tab-btn {
+    flex: 1;
+    height: 48px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: 1.5px solid var(--color-dark);
+    background-color: transparent;
+    font-family: 'Google Sans Code', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-dark);
+    cursor: pointer;
+    transition: background-color 0.1s ease, color 0.1s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.tab-btn.active {
+    border-radius: 100px;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    border-color: var(--color-dark);
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: var(--color-accent);
+}
+
+#pyq-section, #notes-section {
+    width: 100%;
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.module-card {
+    height: 120px;
+    border-radius: 12px;
+    border: 1.5px solid var(--color-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Google Sans Code', monospace;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.module-card.available {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    border-color: var(--color-dark);
+    cursor: pointer;
+}
+
+.module-card.available:hover {
+    filter: brightness(1.2);
+}
+
+.module-card.available:active {
+    filter: brightness(0.9);
+}
+
+.module-card.unavailable {
+    background-color: transparent;
+    color: var(--color-dark);
+    opacity: 0.25;
+    border-style: dashed;
+    cursor: default;
+}
+
+.module-number {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.module-status {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+
+
+
 
 .input-container {
     position: relative;
@@ -208,6 +311,17 @@ a:hover {
 
 .clear-btn.show {
     display: block;
+}
+
+.notes-search-wrapper {
+    flex: 6;
+    position: relative;
+    height: 72px;
+    min-width: 0;
+}
+
+.notes-input {
+    text-transform: none;
 }
 
 .suggestions-list {
@@ -323,9 +437,9 @@ a:hover {
 }
 
 .top-actions {
-    position: absolute;
+    position: fixed;
     top: 40px;
-    right: 40px;
+    right: 28px;
     display: flex;
     gap: 8px;
     z-index: 1500;
@@ -432,7 +546,7 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     border-radius: 12px;
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: clip;
     transition: height 0.6s cubic-bezier(0.19, 1, 0.22, 1);
     display: flex;
     flex-direction: column;
@@ -463,6 +577,16 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     height: 72px;
     opacity: 0;
     animation: simple-fade-in 0.4s ease forwards;
+}
+
+#notes-module-view.loading-container {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    min-height: 200px;
+    background-color: var(--color-light);
+    z-index: 20;
+    box-sizing: border-box;
 }
 
 .loading-text {
@@ -535,6 +659,144 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     gap: 20px;
     position: relative;
+    cursor: pointer;
+}
+
+.subject-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#notes-subject-list .paper-item {
+    padding: 16px 24px;
+}
+
+#notes-subject-list .paper-item:hover {
+    background-color: var(--color-accent);
+}
+
+#notes-subject-list .paper-item.expanded {
+    background-color: var(--color-accent);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+#notes-subject-list .paper-item.expanded::after {
+    display: none;
+}
+
+#notes-subject-list .paper-code {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border: 1.5px solid var(--color-dark);
+    border-radius: 100px;
+    opacity: 0.55;
+    letter-spacing: 0.03em;
+}
+
+.subject-chevron {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--color-dark);
+    border-bottom: 2px solid var(--color-dark);
+    transform: rotate(-45deg);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+    opacity: 0.3;
+}
+
+.paper-item.expanded .subject-chevron {
+    transform: rotate(45deg);
+    opacity: 0.5;
+}
+
+.modules-container {
+    display: none;
+    background-color: rgba(var(--color-dark-rgb), 0.02);
+    position: relative;
+}
+
+.modules-container.open {
+    display: block;
+}
+
+.modules-container::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: rgba(var(--color-dark-rgb), 0.07);
+}
+
+.modules-container.open:empty::before {
+    display: none;
+}
+
+.module-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+    padding: 8px 24px 8px 44px;
+    gap: 16px;
+    position: relative;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.module-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 44px;
+    right: 24px;
+    height: 1px;
+    background-color: rgba(var(--color-dark-rgb), 0.06);
+}
+
+.module-item:last-child::after {
+    display: none;
+}
+
+.module-item:first-child::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    width: 14px;
+    height: 2px;
+    background-color: rgba(var(--color-dark-rgb), 0.07);
+}
+
+.module-item:hover {
+    background-color: var(--color-accent);
+}
+
+.module-item.selected {
+    background-color: var(--color-accent);
+}
+
+.module-item .paper-checkbox {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--color-dark);
+    border-radius: 3px;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.module-item.selected .paper-checkbox {
+    background-color: var(--color-dark);
+    border-color: var(--color-dark);
+}
+
+.module-item .paper-title {
+    font-size: 13px;
 }
 
 .paper-item::after {
@@ -621,8 +883,10 @@ body, .container, .status-card, .input-box, .custom-select .select-trigger, .sec
 }
 
 .paper-code {
+    font-family: 'Google Sans Code', monospace;
+    font-size: 12px;
     color: var(--color-dark);
-    opacity: 0.4;
+    opacity: 0.6;
     font-weight: 400;
 }
 
@@ -1057,7 +1321,7 @@ body::after {
 @media (max-width: 560px) {
     .notif-row {
         flex-direction: column;
-        align-items: flex-start;
+    align-items: center;
     }
     
     .notif-attachments {
@@ -1072,11 +1336,22 @@ body::after {
 
 @media (max-width: 768px) {
     .container {
-        padding: 20px 16px;
+        padding: 14px 16px 20px;
     }
     .top-actions {
-        top: 20px;
-        right: 20px;
+        position: absolute;
+        right: 0;
+        top: 60px;
+        margin: 0;
+        padding: 0;
+        transform: none;
+    }
+    .title-row {
+        position: relative;
+        align-items: flex-start;
+    }
+    .title {
+        margin: 60px 0 8px;
     }
     .action-card {
         width: 52px;
@@ -1094,6 +1369,10 @@ body::after {
     .section {
         margin-top: 20px;
         margin-bottom: 20px;
+    }
+    .tab-bar {
+        margin-top: 20px;
+        gap: 5px;
     }
     .dropdown-group,
     .button-group,
@@ -1114,9 +1393,16 @@ body::after {
     .secondary-button .button-icon {
         margin-right: 0;
     }
-    .custom-select {
+    .notes-search-wrapper {
+        flex: none;
+        width: 100%;
+        height: 72px;
+    }
+    .custom-select,
+    #notes-semester-select {
         width: 100%;
         flex: none;
+        height: 72px;
     }
     .secondary-button {
         width: 100%;
@@ -1125,8 +1411,8 @@ body::after {
     .section-title {
         margin-bottom: 4px;
     }
-    .title {
-        margin-top: 60px;
+    #notes-suggestions-list {
+        display: none !important;
     }
     .select-options,
     .suggestions-list {

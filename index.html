@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Primary Meta Tags -->
-    <title>KTU Archive - Download 2024 Scheme KTU Question Papers</title>
-    <meta name="title" content="KTU Archive - Download 2024 Scheme KTU Question Papers">
-    <meta name="description" content="Download KTU 2024 Scheme Previous Year Question Papers.">
-    <meta name="keywords" content="ktu archive,ktu,apjaktu,2024 scheme,ktu pyq,ktu pyqs,ktu papers,ktu question papers,btech">
+    <title>KTU Archive - Download 2024 Scheme KTU Question Papers & Notes</title>
+    <meta name="title" content="KTU Archive - Download 2024 Scheme KTU Question Papers & Notes">
+    <meta name="description" content="Download KTU 2024 Scheme Previous Year Question Papers & Notes.">
+    <meta name="keywords" content="ktu archive,ktu,apjaktu,2024 scheme,ktu pyq,ktu pyqs,ktu papers,ktu notes,ktu question papers,btech">
     <meta name="application-name" content="KTU Archive">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -18,7 +18,7 @@
     <meta property="og:url" content="https://ktu-archive.vercel.app/">
     <meta property="og:site_name" content="KTU Archive">
     <meta property="og:title" content="KTU Archive - 2024 Scheme Question Papers">
-    <meta property="og:description" content="Download KTU 2024 Scheme Previous Year Question Papers.">
+    <meta property="og:description" content="Download KTU 2024 Scheme Previous Year Question Papers & Notes.">
     <link rel="image_src" href="https://ktu-archive.vercel.app/assets/meta/og-image.jpg">
     <meta property="og:image" content="https://ktu-archive.vercel.app/assets/meta/og-image.jpg">
     <meta property="og:image:secure_url" content="https://ktu-archive.vercel.app/assets/meta/og-image.jpg">
@@ -30,8 +30,8 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://ktu-archive.vercel.app/">
-    <meta property="twitter:title" content="KTU Archive - 2024 Scheme Question Papers">
-    <meta property="twitter:description" content="Download KTU 2024 Scheme Previous Year Question Papers.">
+    <meta property="twitter:title" content="KTU Archive - 2024 Scheme Question Papers & Notes">
+    <meta property="twitter:description" content="Download KTU 2024 Scheme Previous Year Question Papers & Notes.">
     <meta property="twitter:image" content="https://ktu-archive.vercel.app/assets/meta/og-image.jpg">
 
     <!-- Google Search Console Verification -->
@@ -68,62 +68,107 @@
 </head>
 <body>
 
-    <div class="top-actions">
-        <div class="action-card" id="notif-btn" style="display: none;">
-            <img src="/assets/buttons/bell-light.svg" alt="Notifications" class="action-icon">
-        </div>
-        <div class="action-card" id="theme-toggle-btn">
-            <img src="/assets/buttons/light-mode.svg" alt="Theme Toggle" class="action-icon" id="theme-icon">
-        </div>
-    </div>
-
     <div class="container">
-        <h1 class="title">KTU Archive</h1>
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="pyq">PYQ's</button>
+            <button class="tab-btn" data-tab="notes">Notes</button>
+        </div>
+        <div class="title-row">
+            <h1 class="title">KTU Archive</h1>
+            <div class="top-actions">
+                <div class="action-card" id="notif-btn">
+                    <img src="/assets/buttons/bell-light.svg" alt="Notifications" class="action-icon">
+                </div>
+                <div class="action-card" id="theme-toggle-btn">
+                    <img src="/assets/buttons/light-mode.svg" alt="Theme Toggle" class="action-icon" id="theme-icon">
+                </div>
+            </div>
+        </div>
 
         <div class="section">
             <h2 class="section-title">About the project</h2>
-            <p class="description">Download 2024 Scheme Previous Year Question Papers From APJ Abdul Kalam Technological University.</p>
+            <p class="description">Download 2024 Scheme Previous Year Question Papers & Notes From APJ Abdul Kalam Technological University.</p>
         </div>
 
         <div class="section">
             <h2 class="section-title">Contribute to the project</h2>
-            <p class="description">If you are a student or faculty member, you can share the 2024 scheme question papers through the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa9GLIEIGP3MsFCTOvrmSlgO33ebS7zhPnbwgBmE9_g6YWWg/viewform?usp=header" target="_blank">Google Form</a></p>
+            <p class="description" id="contribute-desc">If you are a student or faculty member, you can share the 2024 scheme question papers through the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa9GLIEIGP3MsFCTOvrmSlgO33ebS7zhPnbwgBmE9_g6YWWg/viewform?usp=header" target="_blank">Google Form</a></p>
         </div>
 
-        <div class="input-container">
-            <input type="text" class="input-box" placeholder="Enter Subject Code" autocomplete="off">
-            <div class="clear-btn" id="clear-search-btn">✕</div>
-            <div class="suggestions-list" id="suggestions-list"></div>
-        </div>
-
-        <div class="dropdown-group">
-            <div class="custom-select" id="semester-select">
-                <div class="select-trigger">
-                    <div class="text-chevron-group">
-                        <span class="selected-text">Select Semester</span>
-                        <span class="chevron">▼</span>
-                    </div>
-                </div>
-                <div class="select-options"></div>
+        <div id="pyq-section">
+            <div class="input-container">
+                <input type="text" class="input-box" placeholder="Enter Subject Code" autocomplete="off">
+                <div class="clear-btn" id="clear-search-btn">✕</div>
+                <div class="suggestions-list" id="suggestions-list"></div>
             </div>
 
-            <div class="custom-select" id="subject-select">
-                <div class="select-trigger">
-                    <div class="text-chevron-group">
-                        <span class="selected-text">Select Subject</span>
-                        <span class="chevron">▼</span>
+            <div class="dropdown-group">
+                <div class="custom-select" id="semester-select">
+                    <div class="select-trigger">
+                        <div class="text-chevron-group">
+                            <span class="selected-text">Select Semester</span>
+                            <span class="chevron">▼</span>
+                        </div>
                     </div>
+                    <div class="select-options"></div>
                 </div>
-                <div class="select-options"></div>
+
+                <div class="custom-select" id="subject-select">
+                    <div class="select-trigger">
+                        <div class="text-chevron-group">
+                            <span class="selected-text">Select Subject</span>
+                            <span class="chevron">▼</span>
+                        </div>
+                    </div>
+                    <div class="select-options"></div>
+                </div>
+            </div>
+
+            <div class="results-container" id="results-container"></div>
+
+            <div class="action-stack">
+                <button class="search-button">
+                    <span class="button-text">SEARCH</span>
+                </button>
             </div>
         </div>
 
-        <div class="results-container" id="results-container"></div>
+        <div id="notes-section" style="display: none;">
+            <div class="input-container">
+                <input type="text" class="input-box notes-input" placeholder="Enter Subject Code" autocomplete="off">
+                <div class="clear-btn" id="clear-notes-search-btn">✕</div>
+                <div class="suggestions-list" id="notes-suggestions-list"></div>
+            </div>
 
-        <div class="action-stack">
-            <button class="search-button">
-                <span class="button-text">SEARCH</span>
-            </button>
+            <div class="dropdown-group">
+                <div class="custom-select" id="notes-semester-select">
+                    <div class="select-trigger">
+                        <div class="text-chevron-group">
+                            <span class="selected-text">Select Semester</span>
+                            <span class="chevron">▼</span>
+                        </div>
+                    </div>
+                    <div class="select-options"></div>
+                </div>
+
+                <div class="custom-select" id="notes-subject-select">
+                    <div class="select-trigger">
+                        <div class="text-chevron-group">
+                            <span class="selected-text">Select Subject</span>
+                            <span class="chevron">▼</span>
+                        </div>
+                    </div>
+                    <div class="select-options"></div>
+                </div>
+            </div>
+
+            <div class="results-container" id="notes-results-container"></div>
+
+            <div class="action-stack">
+                <button class="search-button" id="notes-search-btn">
+                    <span class="button-text">SEARCH</span>
+                </button>
+            </div>
         </div>
 
         <div class="button-group">
