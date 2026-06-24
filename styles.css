@@ -1321,7 +1321,7 @@ body::after {
 @media (max-width: 560px) {
     .notif-row {
         flex-direction: column;
-    align-items: center;
+        align-items: flex-start;
     }
     
     .notif-attachments {
