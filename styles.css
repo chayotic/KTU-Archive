@@ -1411,9 +1411,6 @@ body::after {
     .section-title {
         margin-bottom: 4px;
     }
-    #notes-suggestions-list {
-        display: none !important;
-    }
     .select-options,
     .suggestions-list {
         top: calc(100% + 5px);

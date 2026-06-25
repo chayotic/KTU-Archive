@@ -271,25 +271,14 @@ async function initializeApp() {
     }
 }
 
-function updateInputPlaceholder() {
-    if (window.innerWidth <= 768) {
-        inputBox.placeholder = 'Enter Subject Code';
-    } else {
-        inputBox.placeholder = 'Enter Subject Code / Subject Name';
-    }
-}
-
-updateInputPlaceholder();
-window.addEventListener('resize', updateInputPlaceholder);
+inputBox.placeholder = 'Enter Subject Code / Subject Name';
 
 initializeApp();
 
 inputBox.addEventListener('input', (e) => {
     const value = e.target.value;
     
-    if (window.innerWidth > 768) {
-        updateSuggestions(value);
-    }
+    updateSuggestions(value);
     
     if (value.trim().length > 0) {
         clearSearchBtn.classList.add('show');
@@ -1173,13 +1162,7 @@ if (notesInput) {
         });
     }
 
-    function updateNotesPlaceholder() {
-        notesInput.placeholder = window.innerWidth <= 768
-            ? 'Enter Subject Code'
-            : 'Enter Subject Code / Subject Name';
-    }
-    updateNotesPlaceholder();
-    window.addEventListener('resize', updateNotesPlaceholder);
+    notesInput.placeholder = 'Enter Subject Code / Subject Name';
 }
 
 notesSearchBtn.addEventListener('click', () => {
