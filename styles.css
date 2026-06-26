@@ -382,7 +382,8 @@ a:hover {
     display: none;
 }
 
-.suggestion-item:hover {
+.suggestion-item:hover,
+.suggestion-item.active {
     background-color: var(--color-accent);
 }
 

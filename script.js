@@ -157,6 +157,7 @@ function initCustomSelect(selectElement) {
 function updateSuggestions(query) {
     if (!query || query.length < 1) {
         suggestionsList.classList.remove('show');
+        pyqSuggestionIndex = -1;
         return;
     }
 
@@ -165,6 +166,7 @@ function updateSuggestions(query) {
         subject.name.toLowerCase().includes(query.toLowerCase())
     ).slice(0, 5);
 
+    pyqSuggestionIndex = -1;
     if (filtered.length > 0) {
         suggestionsList.innerHTML = '';
         filtered.forEach(subject => {
@@ -271,9 +273,47 @@ async function initializeApp() {
     }
 }
 
+let pyqSuggestionIndex = -1;
+
+function updateActiveSuggestion(list) {
+    const items = list.querySelectorAll('.suggestion-item');
+    items.forEach((item, i) => {
+        item.classList.toggle('active', i === pyqSuggestionIndex);
+    });
+}
+
 inputBox.placeholder = 'Enter Subject Code / Subject Name';
 
 initializeApp();
+
+inputBox.addEventListener('keydown', (e) => {
+    const items = suggestionsList.querySelectorAll('.suggestion-item');
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (items.length === 0) return;
+        pyqSuggestionIndex = (pyqSuggestionIndex + 1) % items.length;
+        updateActiveSuggestion(suggestionsList);
+        items[pyqSuggestionIndex].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (items.length === 0) return;
+        pyqSuggestionIndex = (pyqSuggestionIndex - 1 + items.length) % items.length;
+        updateActiveSuggestion(suggestionsList);
+        items[pyqSuggestionIndex].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Escape') {
+        suggestionsList.classList.remove('show');
+        pyqSuggestionIndex = -1;
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const activeItem = suggestionsList.querySelector('.suggestion-item.active');
+        if (activeItem) {
+            activeItem.click();
+        } else if (items.length > 0) {
+            items[0].click();
+        }
+        searchButton.click();
+    }
+});
 
 inputBox.addEventListener('input', (e) => {
     const value = e.target.value;
@@ -302,6 +342,7 @@ clearSearchBtn.addEventListener('click', () => {
     inputBox.value = '';
     clearSearchBtn.classList.remove('show');
     suggestionsList.classList.remove('show');
+    pyqSuggestionIndex = -1;
     resultsContainer.innerHTML = '';
     selectedPapers = [];
     updateDownloadButton();
@@ -317,6 +358,34 @@ clearSearchBtn.addEventListener('click', () => {
 document.addEventListener('click', (e) => {
     if (!inputBox.contains(e.target) && !suggestionsList.contains(e.target)) {
         suggestionsList.classList.remove('show');
+        pyqSuggestionIndex = -1;
+    }
+    if (notesInput && !notesInput.contains(e.target) && !notesSuggestions.contains(e.target)) {
+        notesSuggestions.classList.remove('show');
+        notesSuggestionIndex = -1;
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+        if (document.getElementById('pyq-section').style.display !== 'none') {
+            const sem = semesterSelect.getAttribute('data-selected-value');
+            const subj = subjectSelect.getAttribute('data-selected-value');
+            if (sem && subj) {
+                e.preventDefault();
+                performSearch();
+            }
+        } else {
+            const sem = notesSemesterSelect.getAttribute('data-selected-value');
+            const subj = notesSubjectSelect.getAttribute('data-selected-value');
+            if (sem && subj) {
+                e.preventDefault();
+                searchNotes();
+            }
+        }
     }
 });
 
@@ -1083,6 +1152,15 @@ function populateNotesSubjectSelect(semester) {
 
 initCustomSelect(notesSubjectSelect);
 
+let notesSuggestionIndex = -1;
+
+function updateNotesActiveSuggestion() {
+    const items = notesSuggestions.querySelectorAll('.suggestion-item');
+    items.forEach((item, i) => {
+        item.classList.toggle('active', i === notesSuggestionIndex);
+    });
+}
+
 const notesInput = document.querySelector('.notes-input');
 const notesClearBtn = document.getElementById('clear-notes-search-btn');
 const notesSuggestions = document.getElementById('notes-suggestions-list');
@@ -1100,6 +1178,7 @@ if (notesInput) {
     notesInput.addEventListener('input', () => {
         notesInput.value = notesInput.value.toUpperCase();
         const value = notesInput.value.trim().toLowerCase();
+        notesSuggestionIndex = -1;
         if (value.length > 0) {
             notesClearBtn.classList.add('show');
             const filtered = notesSubjects
@@ -1134,6 +1213,7 @@ if (notesInput) {
         notesInput.value = code;
         notesClearBtn.classList.remove('show');
         notesSuggestions.classList.remove('show');
+        notesSuggestionIndex = -1;
 
         const semTrigger = notesSemesterSelect.querySelector('.selected-text');
         semTrigger.textContent = semester;
@@ -1155,12 +1235,42 @@ if (notesInput) {
             notesInput.value = '';
             notesClearBtn.classList.remove('show');
             notesSuggestions.classList.remove('show');
+            notesSuggestionIndex = -1;
             notesInput.focus();
             notesResultsContainer.innerHTML = '';
             selectedNotesModules = [];
             currentNotesSubject = null;
         });
     }
+
+    notesInput.addEventListener('keydown', (e) => {
+        const items = notesSuggestions.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (items.length === 0) return;
+            notesSuggestionIndex = (notesSuggestionIndex + 1) % items.length;
+            updateNotesActiveSuggestion();
+            items[notesSuggestionIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (items.length === 0) return;
+            notesSuggestionIndex = (notesSuggestionIndex - 1 + items.length) % items.length;
+            updateNotesActiveSuggestion();
+            items[notesSuggestionIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Escape') {
+            notesSuggestions.classList.remove('show');
+            notesSuggestionIndex = -1;
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const activeItem = notesSuggestions.querySelector('.suggestion-item.active');
+            if (activeItem) {
+                activeItem.click();
+            } else if (items.length > 0) {
+                items[0].click();
+            }
+            notesSearchBtn.click();
+        }
+    });
 
     notesInput.placeholder = 'Enter Subject Code / Subject Name';
 }
@@ -1192,6 +1302,7 @@ async function searchNotes() {
     notesInput.value = '';
     notesClearBtn.classList.remove('show');
     notesSuggestions.classList.remove('show');
+    notesSuggestionIndex = -1;
 
     notesResultsContainer.innerHTML = `
         <div class="results-card loading-container" style="display: flex;">
