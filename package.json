@@ -2,6 +2,7 @@
   "name": "ktu-archive",
   "version": "1.0.0",
   "description": "Download 2024 Scheme Previous Year KTU Question Papers.",
+  "type": "module",
   "main": "index.html",
   "scripts": {
     "dev": "vite",

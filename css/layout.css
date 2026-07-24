@@ -1,0 +1,181 @@
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        position: relative;
+    }
+
+    .page {
+        display: none;
+    }
+
+    .page.active {
+        display: block;
+    }
+
+    .title {
+        font-family: 'Google Sans Code', monospace;
+        font-weight: 500;
+        margin-top: 28px;
+        margin-bottom: 8px;
+        font-size: 24px;
+        color: var(--color-dark);
+    }
+
+    .title-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .page-notif-title {
+        padding-left: 40px;
+    }
+
+    .section {
+        margin-top: 24px;
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        font-family: 'Google Sans Code', monospace;
+        font-weight: 500;
+        font-size: 18px;
+        margin: 0 0 4px 0;
+        color: var(--color-dark);
+    }
+
+    .description {
+        font-family: 'Google Sans Code', monospace;
+        font-size: 15px;
+        line-height: 1.7;
+        margin: 0;
+        color: var(--color-dark);
+        opacity: 0.9;
+    }
+
+    .tab-bar {
+        display: flex;
+        gap: 4px;
+        margin-top: 56px;
+        margin-bottom: 32px;
+    }
+
+    .tab-btn {
+        flex: 1;
+        height: 48px;
+        font-size: 13px;
+        border-radius: 4px;
+        border: 1.5px solid var(--color-dark);
+        background-color: transparent;
+        font-family: 'Google Sans Code', monospace;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--color-dark);
+        cursor: pointer;
+        transition: background-color 0.1s ease, color 0.1s ease;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .tab-btn.active {
+        border-radius: 100px;
+        background-color: var(--color-dark);
+        color: var(--color-light);
+        border-color: var(--color-dark);
+    }
+
+    .tab-btn:hover:not(.active) {
+        background-color: var(--color-accent);
+    }
+
+    .top-actions {
+        position: fixed;
+        top: 40px;
+        right: 28px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1500;
+    }
+
+    .hamburger-icon {
+        display: none;
+    }
+
+    .top-actions-right {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-card {
+        width: 56px;
+        height: 56px;
+        border: none;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+    }
+
+    .action-card:hover {
+        background-color: var(--color-accent);
+    }
+
+    .action-card:active {
+        background-color: var(--color-accent);
+    }
+
+    .action-icon {
+        font-size: 24px;
+        color: var(--color-dark);
+        pointer-events: none;
+    }
+
+    #pyq-section,
+    #notes-section {
+        width: 100%;
+        margin-top: 48px;
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #pyq-section .input-container,
+    #notes-section .input-container,
+    #pyq-section .results-container,
+    #notes-section .results-container {
+        margin-top: 0;
+    }
+
+    .dropdown-group,
+    .button-group {
+        display: flex;
+        gap: 4px;
+        margin-top: 0;
+    }
+
+    .button-group {
+        margin-bottom: 8px;
+    }
+
+    .action-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 0;
+        width: 100%;
+    }
+
+    #page-archive .status-card,
+    #page-archive .notif-feed,
+    #view-all-notif-btn {
+        margin-top: 0;
+        margin-bottom: 8px;
+    }

@@ -40,5 +40,7 @@ git clone https://github.com/chayotic/KTU-Archive.git
 
 **Notification API:** [KTU Announcements API](https://github.com/ratherpixelate/ktu-announcements-api)
 
+**FKtuResults** [FKtuResults](https://github.com/prawmathean/FKtuResults)
+
 ---
 <sub>Developed for the student community.</sub>

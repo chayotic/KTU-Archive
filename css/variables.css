@@ -1,0 +1,37 @@
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+        z-index: 1;
+    }
+
+    ::view-transition-new(root) {
+        z-index: 9999;
+    }
+
+    :root {
+        --color-light: #EEEDF3;
+        --color-dark: #111111;
+        --color-light-rgb: 238, 237, 243;
+        --color-dark-rgb: 17, 17, 17;
+        --color-accent: rgba(17, 17, 17, 0.05);
+    }
+
+    .material-symbols-outlined {
+        font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+    }
+
+    [data-theme="dark"] {
+        --color-light: #111111;
+        --color-dark: #EEEDF3;
+        --color-light-rgb: 17, 17, 17;
+        --color-dark-rgb: 238, 237, 243;
+        --color-accent: rgba(238, 237, 243, 0.05);
+    }

@@ -1,0 +1,80 @@
+    .sidebar-icons {
+        position: fixed;
+        left: 24px;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        z-index: 1000;
+        padding-top: 88px;
+    }
+
+    .sidebar-theme-btn {
+        margin-top: auto;
+        margin-bottom: 32px;
+        color: var(--color-dark);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .sidebar-icons .material-symbols-outlined {
+        display: flex;
+        align-items: center;
+        color: var(--color-dark);
+        cursor: pointer;
+        user-select: none;
+        padding: 16px;
+        border-radius: 14px;
+        transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+    }
+
+    .sidebar-icons .material-symbols-outlined::after {
+        content: attr(data-tooltip);
+        font-family: 'Google Sans Code', monospace;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 0;
+        margin-left: 0;
+        opacity: 0;
+        transition: max-width 0.25s ease, margin-left 0.25s ease, opacity 0.2s ease;
+    }
+
+    .sidebar-icons .material-symbols-outlined:hover {
+        background-color: rgba(var(--color-dark-rgb), 0.1);
+    }
+
+    .sidebar-icons .material-symbols-outlined.active {
+        background-color: #111111;
+        color: #ffffff;
+    }
+
+    .sidebar-icons .material-symbols-outlined:hover::after,
+    .sidebar-icons .material-symbols-outlined.active:hover::after {
+        max-width: 200px;
+        margin-left: 12px;
+        opacity: 1;
+    }
+
+    #sidebar-theme-icon:hover {
+        background-color: transparent;
+    }
+
+    #sidebar-theme-icon:hover::after {
+        max-width: 0;
+        margin-left: 0;
+        opacity: 0;
+    }
+
+    [data-theme="dark"] .sidebar-icons .material-symbols-outlined.active {
+        background-color: #ffffff;
+        color: #111111;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-icons {
+            display: none;
+        }
+    }
