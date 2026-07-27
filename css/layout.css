@@ -157,7 +157,7 @@
     .dropdown-group,
     .button-group {
         display: flex;
-        gap: 4px;
+        gap: 8px;
         margin-top: 0;
     }
 

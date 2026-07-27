@@ -281,24 +281,19 @@ function updateSelectAllButton() {
     const paperItems = resultsContainer.querySelectorAll('.paper-item');
     const allSelected = paperItems.length > 0 && selectedPapers.length === paperItems.length;
 
-    const textEl = document.getElementById('select-all-text');
-    if (textEl) textEl.textContent = allSelected ? 'Deselect All' : 'Select All';
     if (allSelected) selectAllBtn.classList.add('selected');
     else selectAllBtn.classList.remove('selected');
 }
 
 function toggleZipMode() {
     zipEnabled = !zipEnabled;
+    const zipBtn = document.getElementById('download-zip-btn');
+    if (zipBtn) zipBtn.classList.toggle('selected', zipEnabled);
     updateZipButton();
     updateDownloadButton();
 }
 
 function updateZipButton() {
-    const zipBtn = document.getElementById('download-zip-btn');
-    if (!zipBtn) return;
-
-    const checkbox = zipBtn.querySelector('.btn-checkbox');
-    if (checkbox) checkbox.style.backgroundColor = zipEnabled ? 'var(--color-dark)' : 'transparent';
 }
 
 export async function performSearch() {
@@ -379,11 +374,9 @@ export async function performSearch() {
     actionsDiv.className = 'paper-actions';
     actionsDiv.innerHTML = `
         <div class="action-btn" id="select-all-btn">
-            <div class="btn-checkbox" id="select-all-checkbox"></div>
             <span id="select-all-text">Select All</span>
         </div>
         <div class="action-btn" id="download-zip-btn">
-            <div class="btn-checkbox"></div>
             <span class="zip-btn-text">Convert to ZIP</span>
         </div>
     `;
@@ -506,9 +499,10 @@ function downloadSelectedPapers() {
     const savedHtml = paperCard ? paperCard.getAttribute('data-paper-html') : null;
 
     if (paperCard) {
+        paperCard.style.height = '72px';
         paperCard.innerHTML = `
-            <div class="loading-text" style="margin-bottom: 24px;">PREPARING YOUR PAPERS</div>
-            <div class="progress-bar-container" style="width: 80%;">
+            <div class="loading-text">PREPARING YOUR PAPERS</div>
+            <div class="progress-bar-container">
                 <div class="progress-bar"></div>
             </div>
         `;
@@ -542,8 +536,16 @@ function downloadSelectedPapers() {
             if (i === papersToDownload.length - 1) {
                 setTimeout(() => {
                     if (paperCard && savedHtml) {
+                        paperCard.style.height = paperCard.offsetHeight + 'px';
                         paperCard.innerHTML = savedHtml;
                         paperCard.classList.remove('loading-container');
+                        requestAnimationFrame(() => {
+                            paperCard.style.height = paperCard.scrollHeight + 'px';
+                        });
+                        paperCard.addEventListener('transitionend', function handler() {
+                            paperCard.style.height = '';
+                            paperCard.removeEventListener('transitionend', handler);
+                        });
                         paperCard.querySelectorAll('.paper-item.selected').forEach(el => el.classList.remove('selected'));
                     }
                     selectedPapers = [];
@@ -573,9 +575,10 @@ async function downloadAsZip() {
     const subjectCode = firstPaper ? firstPaper.dataset.subjectCode : 'KTU-Papers';
 
     if (paperCard) {
+        paperCard.style.height = '72px';
         paperCard.innerHTML = `
-            <div class="loading-text" style="margin-bottom: 24px;">ZIPPING PAPERS</div>
-            <div class="progress-bar-container" style="width: 80%;">
+            <div class="loading-text">ZIPPING PAPERS</div>
+            <div class="progress-bar-container">
                 <div class="progress-bar"></div>
             </div>
         `;
@@ -609,8 +612,16 @@ async function downloadAsZip() {
         document.body.removeChild(a);
 
         if (paperCard && savedHtml) {
+            paperCard.style.height = paperCard.offsetHeight + 'px';
             paperCard.innerHTML = savedHtml;
             paperCard.classList.remove('loading-container');
+            requestAnimationFrame(() => {
+                paperCard.style.height = paperCard.scrollHeight + 'px';
+            });
+            paperCard.addEventListener('transitionend', function handler() {
+                paperCard.style.height = '';
+                paperCard.removeEventListener('transitionend', handler);
+            });
         }
 
         zipEnabled = false;
@@ -622,8 +633,16 @@ async function downloadAsZip() {
         console.error(err);
         showToast('Failed to create ZIP');
         if (paperCard && savedHtml) {
+            paperCard.style.height = paperCard.offsetHeight + 'px';
             paperCard.innerHTML = savedHtml;
             paperCard.classList.remove('loading-container');
+            requestAnimationFrame(() => {
+                paperCard.style.height = paperCard.scrollHeight + 'px';
+            });
+            paperCard.addEventListener('transitionend', function handler() {
+                paperCard.style.height = '';
+                paperCard.removeEventListener('transitionend', handler);
+            });
         }
     }
 }

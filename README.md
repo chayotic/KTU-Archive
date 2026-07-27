@@ -1,11 +1,19 @@
 # KTU Archive
-Download **2024 Scheme** Previous Year Question Papers From APJ Abdul Kalam Technological University (KTU).
 
 <p>
   <img src="https://img.shields.io/badge/Status-Live-1a73e8?style=flat-square&labelColor=174ea6" alt="Status">
   <img src="https://img.shields.io/badge/Scheme-2024-1a73e8?style=flat-square&labelColor=174ea6" alt="Scheme">
   <img src="https://img.shields.io/badge/Maintenance-Active-1a73e8?style=flat-square&labelColor=174ea6" alt="Maintenance">
 </p>
+
+## KTU PYQ & NOTES DOWNLOADER
+Download **2024 Scheme** Previous Year Question Papers & Module-Wise Notes For APJ Abdul Kalam Technological University (KTU).
+
+## KTU RESULT FETCHER
+Fetch Your **KTU Grade Card** From [app.ktu.edu.in](https://app.ktu.edu.in).
+This Tool Bypasses The **504 GATEWAY TIMEOUT** Error. 
+<br>
+<sub> for more details, visit [FKtuResults](https://github.com/prawmathean/FKtuResults).
 
 ---
 
@@ -40,7 +48,7 @@ git clone https://github.com/chayotic/KTU-Archive.git
 
 **Notification API:** [KTU Announcements API](https://github.com/ratherpixelate/ktu-announcements-api)
 
-**FKtuResults** [FKtuResults](https://github.com/prawmathean/FKtuResults)
+**Fetch KTU Results:** [FKtuResults](https://github.com/prawmathean/FKtuResults)
 
 ---
 <sub>Developed for the student community.</sub>

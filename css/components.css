@@ -60,6 +60,10 @@
         display: block;
     }
 
+    .input-box[type="password"] {
+        text-transform: none;
+    }
+
     .notes-input {
         text-transform: none;
     }
@@ -786,18 +790,16 @@
         background-color: rgba(17, 17, 17, 0.05);
     }
 
-    .btn-checkbox {
-        width: 12px;
-        height: 12px;
-        border: 2px solid var(--color-dark);
-        border-radius: 2px;
-        flex-shrink: 0;
-        margin-right: 4px;
-        transition: background-color 0.2s;
+
+    .action-btn.selected {
+        background-color: var(--color-dark);
+        color: var(--color-light);
+        border-radius: 999px;
+        cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto !important;
     }
 
-    .action-btn.selected .btn-checkbox {
-        background-color: var(--color-dark);
+    [data-theme="dark"] .action-btn.selected {
+        cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
     }
 
 /* --- Status Card --- */
@@ -1163,7 +1165,7 @@
         height: 72px;
     }
 
-    .fr-save-btn {
+.fr-save-btn {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1178,10 +1180,25 @@
         font-family: 'Google Sans Code', monospace;
         font-size: 11px;
         font-weight: 500;
-        cursor: pointer;
+        cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
         box-sizing: border-box;
         transition: background-color 0.2s;
         flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .fr-save-btn {
+        cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto !important;
+    }
+
+    .fr-save-btn.saved {
+        background-color: var(--color-dark);
+        color: var(--color-light);
+        border-radius: 999px;
+        cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto !important;
+    }
+
+    [data-theme="dark"] .fr-save-btn.saved {
+        cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
     }
 
     .fr-save-btn:hover {
@@ -1194,33 +1211,7 @@
         border-radius: 999px;
     }
 
-    .fr-save-checkbox {
-        width: 12px;
-        height: 12px;
-        border: 1.5px solid var(--color-dark);
-        border-radius: 2px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-sizing: border-box;
-    }
 
-    .fr-save-check {
-        display: none;
-        fill: var(--color-dark);
-        width: 10px;
-        height: 10px;
-    }
-
-    .fr-save-btn.saved .fr-save-checkbox {
-        border-color: var(--color-light);
-    }
-
-    .fr-save-btn.saved .fr-save-check {
-        display: block;
-        fill: var(--color-light);
-    }
 
     .fr-save-text {
         white-space: nowrap;

@@ -246,8 +246,6 @@ function updateNotesSelectAllButton() {
     if (!btn) return;
     const items = notesResultsContainer.querySelectorAll('[data-notes-module]');
     const allSelected = items.length > 0 && selectedNotesModules.length === items.length;
-    const textEl = document.getElementById('notes-select-all-text');
-    if (textEl) textEl.textContent = allSelected ? 'Deselect All' : 'Select All';
     if (allSelected) btn.classList.add('selected');
     else btn.classList.remove('selected');
 }
@@ -298,6 +296,44 @@ export async function searchNotes() {
     currentNotesSubject = { code: subjectToSearch.code, name: subjectToSearch.name };
     selectedNotesModules = [];
     notesZipEnabled = false;
+
+    const initialLoader = notesResultsContainer.querySelector('.loading-container');
+    if (initialLoader) {
+        initialLoader.style.height = `${initialLoader.offsetHeight}px`;
+    }
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'paper-actions';
+    actionsDiv.innerHTML = `
+        <div class="action-btn" id="notes-select-all-btn">
+            <span id="notes-select-all-text">Select All</span>
+        </div>
+        <div class="action-btn" id="notes-download-zip-btn">
+            <span class="zip-btn-text">Convert to ZIP</span>
+        </div>
+    `;
+    notesResultsContainer.appendChild(actionsDiv);
+
+    document.getElementById('notes-select-all-btn').addEventListener('click', () => {
+        const items = notesResultsContainer.querySelectorAll('[data-notes-module]');
+        const allSelected = items.length > 0 && selectedNotesModules.length === items.length;
+        if (allSelected) {
+            items.forEach(el => { el.classList.remove('selected'); });
+            selectedNotesModules = [];
+        } else {
+            items.forEach(el => { el.classList.add('selected'); });
+            selectedNotesModules = Array.from(items).map(el => el.dataset.notesModule);
+        }
+        updateNotesSelectAllButton();
+        updateNotesDownloadButton();
+    });
+
+    document.getElementById('notes-download-zip-btn').addEventListener('click', () => {
+        notesZipEnabled = !notesZipEnabled;
+        const btn = document.getElementById('notes-download-zip-btn');
+        if (btn) btn.classList.toggle('selected', notesZipEnabled);
+        updateNotesDownloadButton();
+    });
 
     try {
         const response = await fetch(
@@ -375,7 +411,7 @@ function renderNotesResults() {
     const loaderContainer = notesResultsContainer.querySelector('.loading-container');
     if (loaderContainer) {
         loaderContainer.innerHTML = `
-            <div class="fade-wrapper" style="opacity: 0; transition: opacity 0.3s ease;">
+            <div class="fade-wrapper">
                 ${notesModulesData.map(mod => `
                     <div class="paper-item" data-notes-module="${mod.module_number}" data-notes-url="${mod.url}">
                         <div class="paper-item-left">
@@ -390,11 +426,7 @@ function renderNotesResults() {
             </div>
         `;
         loaderContainer.className = 'results-card paper-list';
-
-        requestAnimationFrame(() => {
-            const fw = loaderContainer.querySelector('.fade-wrapper');
-            if (fw) fw.style.opacity = '1';
-        });
+        loaderContainer.setAttribute('data-paper-html', loaderContainer.innerHTML);
     } else {
         notesResultsContainer.innerHTML = '';
         const card = document.createElement('div');
@@ -415,6 +447,7 @@ function renderNotesResults() {
             </div>
         `;
         notesResultsContainer.appendChild(card);
+        card.setAttribute('data-paper-html', card.innerHTML);
 
         requestAnimationFrame(() => {
             const fw = card.querySelector('.fade-wrapper');
@@ -422,50 +455,11 @@ function renderNotesResults() {
         });
     }
 
-    let actionsDiv = notesResultsContainer.querySelector('.paper-actions');
-    if (!actionsDiv) {
-        actionsDiv = document.createElement('div');
-        actionsDiv.className = 'paper-actions';
-        actionsDiv.innerHTML = `
-            <div class="action-btn" id="notes-select-all-btn">
-                <div class="btn-checkbox"></div>
-                <span id="notes-select-all-text">Select All</span>
-            </div>
-            <div class="action-btn" id="notes-download-zip-btn">
-                <div class="btn-checkbox"></div>
-                <span class="zip-btn-text">Convert to ZIP</span>
-            </div>
-        `;
-        notesResultsContainer.appendChild(actionsDiv);
-    }
-
     notesResultsContainer.querySelectorAll('[data-notes-module]').forEach(el => {
         el.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleNotesModule(el);
         });
-    });
-
-    document.getElementById('notes-select-all-btn').addEventListener('click', () => {
-        const items = notesResultsContainer.querySelectorAll('[data-notes-module]');
-        const allSelected = items.length > 0 && selectedNotesModules.length === items.length;
-        if (allSelected) {
-            items.forEach(el => { el.classList.remove('selected'); });
-            selectedNotesModules = [];
-        } else {
-            items.forEach(el => { el.classList.add('selected'); });
-            selectedNotesModules = Array.from(items).map(el => el.dataset.notesModule);
-        }
-        updateNotesSelectAllButton();
-        updateNotesDownloadButton();
-    });
-
-    document.getElementById('notes-download-zip-btn').addEventListener('click', () => {
-        notesZipEnabled = !notesZipEnabled;
-        const btn = document.getElementById('notes-download-zip-btn');
-        const checkbox = btn ? btn.querySelector('.btn-checkbox') : null;
-        if (checkbox) checkbox.style.backgroundColor = notesZipEnabled ? 'var(--color-dark)' : 'transparent';
-        updateNotesDownloadButton();
     });
 
     updateNotesDownloadButton();
@@ -490,14 +484,19 @@ async function handleNotesDownload() {
     const subjectCode = currentNotesSubject?.code || 'Notes';
     const isZip = notesZipEnabled;
 
-    notesResultsContainer.innerHTML = `
-        <div class="results-card loading-container" style="display: flex;">
+    const notesCard = notesResultsContainer.querySelector('.results-card.paper-list');
+    const savedHtml = notesCard ? notesCard.getAttribute('data-paper-html') : null;
+
+    if (notesCard) {
+        notesCard.style.height = '72px';
+        notesCard.innerHTML = `
             <div class="loading-text">${isZip ? 'ZIPPING' : 'PREPARING'} YOUR NOTES</div>
             <div class="progress-bar-container" style="width: 80%;">
                 <div class="progress-bar"></div>
             </div>
-        </div>
-    `;
+        `;
+        notesCard.classList.add('loading-container');
+    }
 
     const PREP_TIME = 2000;
 
@@ -545,11 +544,31 @@ async function handleNotesDownload() {
         }
 
         setTimeout(() => {
-            notesResultsContainer.innerHTML = '';
+            if (notesCard && savedHtml) {
+                notesCard.style.height = notesCard.offsetHeight + 'px';
+                notesCard.innerHTML = savedHtml;
+                notesCard.classList.remove('loading-container');
+                requestAnimationFrame(() => {
+                    notesCard.style.height = notesCard.scrollHeight + 'px';
+                });
+                notesCard.addEventListener('transitionend', function handler() {
+                    notesCard.style.height = '';
+                    notesCard.removeEventListener('transitionend', handler);
+                });
+
+                notesResultsContainer.querySelectorAll('[data-notes-module]').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleNotesModule(el);
+                    });
+                });
+            }
             selectedNotesModules = [];
             notesZipEnabled = false;
-            currentNotesSubject = null;
+            const zipBtn = document.getElementById('notes-download-zip-btn');
+            if (zipBtn) zipBtn.classList.remove('selected');
             updateNotesDownloadButton();
+            updateNotesSelectAllButton();
         }, 2000);
     };
 
