@@ -15,17 +15,18 @@ function getMaxFiles(type) {
 
 let uploadType = 'pyq';
 let pendingFiles = [];
+let isUploading = false;
 
 const uploadFile = document.getElementById('upload-file');
 const uploadTrigger = document.getElementById('upload-trigger');
 const uploadBtn = document.getElementById('upload-btn');
-const uploadBtnText = uploadBtn?.querySelector('.button-text');
 const uploadFileList = document.getElementById('upload-file-list');
 const uploadNotesExtra = document.getElementById('upload-notes-extra');
 const uploadNotesRequest = document.getElementById('upload-notes-request');
 const uploadSemesterSelect = document.getElementById('upload-semester-select');
 const uploadLimitCard = document.getElementById('upload-limit-card');
 const uploadTriggerSub = document.getElementById('upload-trigger-sub');
+const uploadFailedList = document.getElementById('upload-failed-list');
 
 const semesters = Array.from({ length: 8 }, (_, i) => ({ key: String(i + 1), label: `Semester ${i + 1}` }));
 populateOptions(uploadSemesterSelect, semesters, 'key', 'label', 'Select Semester');
@@ -46,6 +47,7 @@ function toggleNotesExtra(show) {
 
 document.querySelectorAll('[data-upload-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
+        if (isUploading) return;
         document.querySelectorAll('[data-upload-tab]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         uploadType = btn.dataset.uploadTab;
@@ -102,29 +104,59 @@ function addFiles(files) {
     renderFileList();
 }
 
-uploadTrigger.addEventListener('click', () => uploadFile.click());
+function renderFailedFiles(failed) {
+    if (failed.length === 0) { uploadFailedList.innerHTML = ''; return; }
+    uploadFailedList.innerHTML = `
+        <div class="upload-failed-header">${failed.length} file${failed.length > 1 ? 's' : ''} failed to upload</div>
+        ${failed.map(f => `
+            <div class="upload-failed-item">
+                <div class="upload-failed-item-info">
+                    <span class="upload-failed-item-name">${f.name}</span>
+                    <span class="upload-failed-item-error">${f.error}</span>
+                </div>
+                <span class="upload-failed-item-dismiss" data-dismiss>✕</span>
+            </div>
+        `).join('')}
+    `;
+    uploadFailedList.querySelectorAll('[data-dismiss]').forEach(el => {
+        el.addEventListener('click', () => {
+            el.closest('.upload-failed-item').remove();
+            if (!uploadFailedList.querySelector('.upload-failed-item')) uploadFailedList.innerHTML = '';
+        });
+    });
+}
+
+uploadTrigger.addEventListener('click', () => {
+    if (isUploading) return;
+    uploadFile.click();
+});
 
 uploadFile.addEventListener('change', () => {
+    if (isUploading) return;
     addFiles(Array.from(uploadFile.files));
     uploadFile.value = '';
 });
 
 uploadTrigger.addEventListener('dragover', e => {
+    if (isUploading) return;
     e.preventDefault();
     uploadTrigger.classList.add('drag-over');
 });
 
 uploadTrigger.addEventListener('dragenter', e => {
+    if (isUploading) return;
     e.preventDefault();
     uploadTrigger.classList.add('drag-over');
 });
 
 uploadTrigger.addEventListener('dragleave', e => {
+    if (isUploading) return;
     e.preventDefault();
     uploadTrigger.classList.remove('drag-over');
 });
 
 uploadTrigger.addEventListener('drop', e => {
+    if (isUploading) return;
     e.preventDefault();
     uploadTrigger.classList.remove('drag-over');
     addFiles(Array.from(e.dataTransfer.files));
@@ -133,6 +165,15 @@ uploadTrigger.addEventListener('drop', e => {
 document.addEventListener('dragover', e => e.preventDefault());
 document.addEventListener('drop', e => e.preventDefault());
 
+function uploadFiles(url, file, headers) {
+    return fetch(url, { method: 'POST', headers, body: file }).then(async r => {
+        let data;
+        try { data = await r.json(); } catch { throw new Error('Server error — try again'); }
+        if (!r.ok) throw new Error(data.error || 'Upload failed');
+        return data;
+    });
+}
+
 uploadBtn.addEventListener('click', async () => {
     if (pendingFiles.length === 0) { showToast('Select files first'); return; }
     if (uploadType === 'notes' && !uploadSemesterSelect.dataset.selectedValue) {
@@ -140,31 +181,60 @@ uploadBtn.addEventListener('click', async () => {
         return;
     }
 
-    uploadBtnText.textContent = `UPLOADING (0/${pendingFiles.length})`;
+    const totalFiles = pendingFiles.length;
+    let completedCount = 0;
+    let successCount = 0;
+    let failedFiles = [];
+
+    isUploading = true;
+    uploadFile.disabled = true;
+    uploadTrigger.classList.add('uploading');
+
+    uploadBtn.innerHTML = `
+        <div class="upload-progress-wrap" id="upload-progress-wrap">
+            <div class="upload-progress-row">
+                <span class="upload-progress-label">Uploading Files</span>
+            </div>
+            <div class="progress-bar-container" style="flex:none;width:100%;max-width:none;height:3px;background-color:rgba(255,255,255,0.15);">
+                <div class="progress-bar determinate" style="width:0%;background-color:var(--color-light);"></div>
+            </div>
+        </div>
+    `;
     uploadBtn.disabled = true;
 
-    let successCount = 0;
+    const progBar = uploadBtn.querySelector('.progress-bar.determinate');
+    const progLabel = uploadBtn.querySelector('.upload-progress-label');
+
+    function setProgress() {
+        const pct = Math.min((completedCount / totalFiles) * 100, 100);
+        if (progBar) progBar.style.width = `${pct}%`;
+    }
+
     for (let i = 0; i < pendingFiles.length; i++) {
         const file = pendingFiles[i];
-        uploadBtnText.textContent = `UPLOADING (${i + 1}/${pendingFiles.length})`;
+        completedCount = i + 1;
+        setProgress();
+        if (progLabel) progLabel.textContent = `Uploading (${i + 1}/${pendingFiles.length})`;
         try {
-            const resp = await fetch('/api/upload', {
-                method: 'POST',
-                headers: {
-                    'X-Upload-Type': uploadType,
-                    'X-Filename': file.name,
-                    'Content-Type': 'application/pdf',
-                    ...(uploadType === 'notes' && uploadSemesterSelect.dataset.selectedValue ? { 'X-Semester': uploadSemesterSelect.dataset.selectedValue } : {}),
-                },
-                body: file,
-            });
-            const data = await resp.json();
-            if (!resp.ok) throw new Error(data.error || 'Upload failed');
+            const headers = {
+                'X-Upload-Type': uploadType,
+                'X-Filename': file.name,
+                'Content-Type': 'application/pdf',
+                ...(uploadType === 'notes' && uploadSemesterSelect.dataset.selectedValue ? { 'X-Semester': uploadSemesterSelect.dataset.selectedValue } : {}),
+            };
+            await uploadFiles('/api/upload', file, headers);
             successCount++;
+            if (i < pendingFiles.length - 1) {
+                if (progLabel) progLabel.textContent = 'Processing...';
+            }
         } catch (e) {
-            showToast(`${file.name}: ${e.message}`);
+            failedFiles.push({ name: file.name, error: e.message });
         }
+        setProgress();
     }
+
+    setProgress();
+    if (progBar) progBar.style.width = '100%';
 
     if (successCount === pendingFiles.length) {
         showToast('All files uploaded successfully!');
@@ -174,6 +244,10 @@ uploadBtn.addEventListener('click', async () => {
 
     pendingFiles = [];
     renderFileList();
-    uploadBtnText.textContent = 'UPLOAD';
+    renderFailedFiles(failedFiles);
+    isUploading = false;
+    uploadFile.disabled = false;
+    uploadTrigger.classList.remove('uploading');
+    uploadBtn.innerHTML = '<span class="button-text">UPLOAD</span>';
     uploadBtn.disabled = false;
 });

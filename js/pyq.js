@@ -293,9 +293,6 @@ function toggleZipMode() {
     updateDownloadButton();
 }
 
-function updateZipButton() {
-}
-
 export async function performSearch() {
     let subjectToSearch = null;
     let selectedCode = inputBox.value.trim().toUpperCase();
@@ -628,7 +625,6 @@ async function downloadAsZip() {
         selectedPapers = [];
         updateDownloadButton();
         updateSelectAllButton();
-        updateZipButton();
     } catch (err) {
         console.error(err);
         showToast('Failed to create ZIP');

@@ -43,6 +43,13 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="ItSKGtz-IFK804MFH36K7-I8g1K3Y_n8NtQeO2Xwb0c" />
 
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light')</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YB4HKZS5PS"></script>
     <script>
@@ -53,18 +60,120 @@
         gtag('config', 'G-YB4HKZS5PS');
     </script>
 
-    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light')</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@300..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #EEEDF3;
+            transition: opacity 0.3s ease;
+        }
+
+        html[data-theme="dark"] #splash-screen {
+            background: #111111;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            height: 100%;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .splash-content.active {
+            opacity: 1;
+        }
+
+        .splash-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .splash-icon {
+            width: 48px;
+            height: 48px;
+            filter: brightness(0);
+        }
+
+        html[data-theme="dark"] .splash-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .splash-title {
+            font-family: 'Google Sans Code', monospace;
+            font-size: 42px;
+            color: #111111;
+            letter-spacing: 0.5px;
+        }
+
+        html[data-theme="dark"] .splash-title {
+            color: #EEEDF3;
+        }
+
+        @media (max-width: 768px) {
+            .splash-title {
+                font-size: 28px;
+            }
+            .splash-icon {
+                width: 32px;
+                height: 32px;
+            }
+            .splash-row {
+                gap: 12px;
+            }
+        }
+
+        .splash-progress {
+            width: 200px;
+            height: 3px;
+            background: rgba(17, 17, 17, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        html[data-theme="dark"] .splash-progress {
+            background: rgba(238, 237, 243, 0.1);
+        }
+
+        .splash-progress-bar {
+            position: absolute;
+            top: 0;
+            left: -35%;
+            width: 30%;
+            height: 100%;
+            background: #111111;
+            border-radius: 4px;
+            animation: splash-indeterminate 1.5s ease-in-out infinite;
+        }
+
+        html[data-theme="dark"] .splash-progress-bar {
+            background: #EEEDF3;
+        }
+
+        @keyframes splash-indeterminate {
+            0% { left: -35%; width: 30%; }
+            50% { width: 50%; }
+            100% { left: 100%; width: 30%; }
+        }
+    </style>
 
     <!-- Schema.org Structured Data for Google -->
     <script type="application/ld+json">
@@ -131,6 +240,33 @@
 </head>
 
 <body>
+
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-row">
+                <img src="/archive.svg" alt="" class="splash-icon" draggable="false">
+                <div class="splash-title">KTU Archive</div>
+            </div>
+            <div class="splash-progress">
+                <div class="splash-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            var splash = document.getElementById('splash-screen');
+            var content = splash.querySelector('.splash-content');
+            var timer = setTimeout(function() {
+                content.classList.add('active');
+            }, 100);
+            function hideSplash() {
+                clearTimeout(timer);
+                splash.classList.add('hidden');
+            }
+            document.fonts.ready.then(hideSplash);
+            setTimeout(hideSplash, 4000);
+        })();
+    </script>
 
     <div class="sidebar-icons">
         <span class="material-symbols-outlined" data-page="archive" data-tooltip="Archive">archive</span>
@@ -433,6 +569,7 @@
                         <span class="button-text">UPLOAD</span>
                     </button>
                 </div>
+                <div id="upload-failed-list" class="upload-failed-list"></div>
                 <div id="upload-notes-request" class="upload-notes-request">Please upload module-wise notes or files with clear module divisions. This helps students find exactly what they need.</div>
             </div>
         </div>

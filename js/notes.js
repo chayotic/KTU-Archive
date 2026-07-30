@@ -164,9 +164,11 @@ if (notesInput) {
         populateOptions(notesSubjectSelect, opts, 'code', 'name', 'Select Subject');
         attachOptionClickHandlers(notesSubjectSelect, notesOnSelect);
 
-        const subTrigger = notesSubjectSelect.querySelector('.selected-text');
-        subTrigger.textContent = name;
-        notesSubjectSelect.setAttribute('data-selected-value', code);
+        setTimeout(() => {
+            const subTrigger = notesSubjectSelect.querySelector('.selected-text');
+            subTrigger.textContent = name;
+            notesSubjectSelect.setAttribute('data-selected-value', code);
+        }, 0);
     });
 
     if (notesClearBtn) {

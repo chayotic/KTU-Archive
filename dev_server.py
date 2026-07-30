@@ -29,6 +29,12 @@ class RouterHandler(BaseHTTPRequestHandler):
             return origin
         return 'https://ktu-archive.vercel.app'
 
+    def _client_ip(self):
+        forwarded = self.headers.get('X-Forwarded-For', '')
+        if forwarded:
+            return forwarded.split(',')[0].strip()
+        return self.client_address[0]
+
     def _respond(self, status, payload):
         self.send_response(status)
         self.send_header('Content-Type', 'application/json')

@@ -13,6 +13,7 @@ SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', '')
 
 MAX_SIZE = {'pyq': 3 * 1024 * 1024, 'notes': 10 * 1024 * 1024}
 MAX_FILES_PER_HOUR = 20
+LOCAL_IPS = frozenset({'127.0.0.1', '::1', '::ffff:127.0.0.1'})
 
 _upload_counts = defaultdict(list)
 
@@ -64,12 +65,13 @@ class handler(BaseHTTPRequestHandler):
             return
 
         ip = self._client_ip()
-        now = time.time()
-        _upload_counts[ip] = [t for t in _upload_counts[ip] if now - t < 3600]
-        if len(_upload_counts[ip]) >= MAX_FILES_PER_HOUR:
-            self._respond(429, {'error': 'Upload limit reached — try again later'})
-            return
-        _upload_counts[ip].append(now)
+        if ip not in LOCAL_IPS:
+            now = time.time()
+            _upload_counts[ip] = [t for t in _upload_counts[ip] if now - t < 3600]
+            if len(_upload_counts[ip]) >= MAX_FILES_PER_HOUR:
+                self._respond(429, {'error': 'Upload limit reached — try again later'})
+                return
+            _upload_counts[ip].append(now)
 
         file_data = self.rfile.read(content_length)
 

@@ -1,4 +1,4 @@
-export function setTheme(theme) {
+function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
 
@@ -17,7 +17,7 @@ export function setTheme(theme) {
     }
 }
 
-export function toggleTheme(originEl) {
+function toggleTheme(originEl) {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
 
