@@ -614,10 +614,8 @@ async function downloadAsZip() {
     if (paperCard) {
         paperCard.style.height = '72px';
         paperCard.innerHTML = `
+            <div class="shape loading-indicator splash-shape"></div>
             <div class="loading-text">ZIPPING PAPERS</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar"></div>
-            </div>
         `;
         paperCard.classList.add('loading-container');
     }
@@ -662,6 +660,8 @@ async function downloadAsZip() {
         }
 
         zipEnabled = false;
+        const zipBtn = document.getElementById('download-zip-btn');
+        if (zipBtn) zipBtn.classList.remove('selected');
         selectedPapers = [];
         updateDownloadButton();
         updateSelectAllButton();

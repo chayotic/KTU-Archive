@@ -379,6 +379,7 @@
         text-transform: none;
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-align: center;
@@ -687,20 +688,12 @@
         position: relative;
     }
 
-    .progress-bar {
-        position: absolute;
-        top: 0;
-        left: -35%;
-        width: 30%;
-        height: 100%;
-        background-color: var(--color-dark);
-        border-radius: 2px;
-        animation: indeterminate-wave 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
     .progress-bar.determinate {
         left: 0;
         width: 0%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
         animation: none;
         transition: width 0.3s ease;
     }
@@ -719,24 +712,11 @@
         animation: simple-fade-in 0.4s ease forwards;
     }
 
-    .fr-loading-bar {
-        width: 100%;
-        height: 4px;
-        background-color: rgba(var(--color-dark-rgb), 0.08);
-        border-radius: 2px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .fr-loading-bar-inner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
+    .fr-loading-card .shape.loading-indicator {
         background-color: var(--color-dark);
-        border-radius: 2px;
-        width: 30%;
-        animation: indeterminate-wave 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        block-size: 32px;
+        inline-size: 32px;
+        flex-shrink: 0;
     }
 
     .fr-log {

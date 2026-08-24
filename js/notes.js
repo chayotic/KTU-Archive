@@ -318,10 +318,8 @@ export async function searchNotes() {
     try {
         notesResultsContainer.innerHTML = `
         <div class="results-card loading-container" style="display: flex;">
+            <div class="shape loading-indicator splash-shape"></div>
             <div class="loading-text">FETCHING NOTES FROM CLOUD</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar"></div>
-            </div>
         </div>
     `;
 
@@ -385,14 +383,14 @@ export async function searchNotes() {
 
     const loaderContainer = notesResultsContainer.querySelector('.loading-container');
     const loadingText = notesResultsContainer.querySelector('.loading-text');
-    const progressBar = notesResultsContainer.querySelector('.progress-bar-container');
+    const loadingShape = notesResultsContainer.querySelector('.shape.loading-indicator');
 
     if (loaderContainer && loadingText) {
         loadingText.style.opacity = '0';
         loadingText.style.transition = 'opacity 0.3s ease';
-        if (progressBar) {
-            progressBar.style.opacity = '0';
-            progressBar.style.transition = 'opacity 0.3s ease';
+        if (loadingShape) {
+            loadingShape.style.opacity = '0';
+            loadingShape.style.transition = 'opacity 0.3s ease';
         }
 
         await new Promise(resolve => setTimeout(resolve, 300));
@@ -527,10 +525,8 @@ async function handleNotesDownload() {
     if (notesCard) {
         notesCard.style.height = '72px';
         notesCard.innerHTML = `
+            <div class="shape loading-indicator splash-shape"></div>
             <div class="loading-text">${isZip ? 'ZIPPING' : 'PREPARING'} YOUR NOTES</div>
-            <div class="progress-bar-container" style="width: 80%;">
-                <div class="progress-bar"></div>
-            </div>
         `;
         notesCard.classList.add('loading-container');
     }

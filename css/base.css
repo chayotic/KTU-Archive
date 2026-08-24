@@ -125,12 +125,6 @@
         to { transform: rotate(360deg); }
     }
 
-    @keyframes indeterminate-wave {
-        0% { left: -35%; width: 30%; }
-        50% { width: 50%; }
-        100% { left: 100%; width: 30%; }
-    }
-
     @keyframes simple-fade-in {
         from { opacity: 0; }
         to { opacity: 1; }
