@@ -62,7 +62,7 @@
 
     .tab-btn {
         flex: 1;
-        height: 48px;
+        height: 64px;
         font-size: 13px;
         border-radius: 4px;
         border: 1.5px solid var(--color-dark);
@@ -72,20 +72,32 @@
         font-weight: 500;
         color: var(--color-dark);
         cursor: pointer;
-        transition: background-color 0.1s ease, color 0.1s ease;
+        box-sizing: border-box;
+        padding: 0;
+        position: relative;
+        overflow: hidden;
+        transition: background-color 0s ease, color 0s ease, border-radius 0s ease;
         user-select: none;
         -webkit-user-select: none;
     }
 
-    .tab-btn.active {
-        border-radius: 100px;
-        background-color: var(--color-dark);
-        color: var(--color-light);
-        border-color: var(--color-dark);
+    .tab-bar .tab-btn.active {
+        border-radius: 100px !important;
+        background-color: var(--color-dark) !important;
+        color: var(--color-light) !important;
+        border-color: var(--color-dark) !important;
     }
 
-    .tab-btn:hover:not(.active) {
-        background-color: var(--color-accent);
+    .tab-bar .tab-btn:active {
+        border-radius: 4px !important;
+    }
+
+    .tab-bar .tab-btn.active:active {
+        border-radius: 100px !important;
+    }
+
+    .tab-btn:is(:hover, :focus-visible)::after {
+        content: none;
     }
 
     .top-actions {

@@ -13,3 +13,8 @@ export function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
+export function stripInlineStyles(html) {
+    if (!html) return '';
+    return html.replace(/\sstyle\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+}

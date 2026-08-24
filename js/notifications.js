@@ -1,5 +1,5 @@
 import { NOTIF_CACHE_KEY, NOTIF_LIMIT } from './constants.js';
-import { escapeHtml } from './utils.js';
+import { escapeHtml, stripInlineStyles } from './utils.js';
 import { getPageFromPath } from './router.js';
 
 export let fullNotifications = [];
@@ -21,11 +21,23 @@ let notifRetryInterval = null;
 let dotInterval = null;
 let hasLoadedOnce = false;
 
+export function showNotifLoader() {
+    const loader = `
+        <div class="shape loading-indicator splash-shape"></div>
+        <span>Trying to fetch notifications</span>
+    `;
+    setNotifMessage(loader);
+}
+
 function startDotAnimation() {
     let dots = 0;
     dotInterval = setInterval(() => {
         dots = (dots + 1) % 4;
-        setNotifMessage('Trying to fetch notifications' + '.'.repeat(dots));
+        const loader = `
+            <div class="shape loading-indicator splash-shape"></div>
+            <span>Trying to fetch notifications${'.'.repeat(dots)}</span>
+        `;
+        setNotifMessage(loader);
     }, 500);
 }
 
@@ -38,7 +50,7 @@ function stopDotAnimation() {
 
 export function fetchNotifications() {
     if (!hasLoadedOnce && !notifRetryInterval) {
-        setNotifMessage('Trying to fetch notifications');
+        showNotifLoader();
         startDotAnimation();
         if (notifFeed) notifFeed.style.display = 'block';
         if (notifBtn) notifBtn.style.display = 'flex-start';
@@ -98,7 +110,7 @@ function renderNotifList() {
             day: '2-digit', month: '2-digit', year: '2-digit'
         });
 
-        const bodyContent = n.description_html || `<p>${escapeHtml(n.description_text || n.title)}</p>`;
+        const bodyContent = n.description_html ? stripInlineStyles(n.description_html) : `<p>${escapeHtml(n.description_text || n.title)}</p>`;
 
         let attachmentsHtml = '';
         if (Array.isArray(n.attachments) && n.attachments.length > 0) {
@@ -146,7 +158,7 @@ export function renderAllNotifications(notifications) {
         const date = new Date(n.date).toLocaleDateString('en-IN', {
             day: '2-digit', month: '2-digit', year: '2-digit'
         });
-        const bodyContent = n.description_html || `<p>${escapeHtml(n.description_text || n.title)}</p>`;
+        const bodyContent = n.description_html ? stripInlineStyles(n.description_html) : `<p>${escapeHtml(n.description_text || n.title)}</p>`;
         let attachmentsHtml = '';
         if (Array.isArray(n.attachments) && n.attachments.length > 0) {
             const attachmentLinks = n.attachments.map(att => {

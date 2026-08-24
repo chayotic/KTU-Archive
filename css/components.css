@@ -149,9 +149,9 @@
         opacity: 0.6;
     }
 
-    #upload-btn:not(.has-files):hover {
-        filter: none;
-        border-color: rgba(var(--color-dark-rgb), 0.4);
+    #upload-btn:disabled {
+        opacity: 1;
+        cursor: pointer;
     }
 
     .upload-notes-request {
@@ -343,6 +343,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        border-radius: 0;
     }
 
     .suggestion-item::after {
@@ -489,6 +490,7 @@
         transition: background-color 0.2s;
         position: relative;
         color: var(--color-dark);
+        border-radius: 0;
     }
 
     .select-options div::after {
@@ -523,14 +525,21 @@
         width: 100%;
         height: 72px;
         background-color: var(--color-dark);
+        color: var(--color-light);
         border: 1.5px solid var(--color-dark);
         border-radius: 12px;
         position: relative;
         overflow: hidden;
         transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         display: block;
+        box-sizing: border-box;
+        padding: 0;
         -webkit-tap-highlight-color: transparent;
         transform: translateZ(0);
+    }
+
+    .action-stack .search-button:active {
+        border-radius: 12px !important;
     }
 
     .button-text {
@@ -545,8 +554,8 @@
         z-index: 10;
     }
 
-    .search-button:hover {
-        filter: brightness(1.2);
+    .search-button:is(:hover, :focus-visible)::after {
+        content: none;
     }
 
     .secondary-button {
@@ -568,14 +577,22 @@
         font-family: 'Google Sans Code', monospace;
         font-size: 12px;
         font-weight: 500;
+        outline: none;
     }
 
     .secondary-button:hover {
         background-color: rgba(17, 17, 17, 0.03);
+        opacity: 1;
     }
 
     .secondary-button:active {
         background-color: rgba(17, 17, 17, 0.05);
+    }
+
+    .secondary-button:focus,
+    .secondary-button:focus-visible,
+    .secondary-button:focus-within {
+        outline: none;
     }
 
     .button-icon {
@@ -587,17 +604,6 @@
     .donate-icon {
         font-size: 18px;
         margin-right: 8px;
-    }
-
-/* --- Ripple --- */
-    .ripple {
-        position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
-        border-radius: 50%;
-        pointer-events: none;
-        transform: scale(0);
-        z-index: 5;
-        animation: material-ripple 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
     }
 
 /* --- Results --- */
@@ -647,7 +653,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 16px;
         padding: 12px 24px;
         min-height: 72px;
@@ -662,6 +668,13 @@
         text-transform: uppercase;
         opacity: 0.7;
         white-space: nowrap;
+    }
+
+    .loading-container .shape.loading-indicator {
+        background-color: var(--color-dark);
+        block-size: 32px;
+        inline-size: 32px;
+        flex-shrink: 0;
     }
 
     .progress-bar-container {
@@ -777,6 +790,7 @@
         gap: 20px;
         position: relative;
         cursor: pointer;
+        border-radius: 0;
     }
 
     .paper-item::after {
@@ -1163,8 +1177,17 @@
         padding: 20px;
         font-family: 'Google Sans Code', monospace;
         font-size: 13px;
-        color: var(--color-dark);
-        opacity: 0.6;
+        color: rgba(var(--color-dark-rgb), 0.6);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .notif-message .shape.loading-indicator {
+        background-color: var(--color-dark);
+        block-size: 32px;
+        inline-size: 32px;
+        flex-shrink: 0;
     }
 
     .notif-item {
@@ -1239,14 +1262,18 @@
         font-weight: 500;
         color: var(--color-dark);
         text-decoration: none;
-        padding: 4px 8px;
+        padding: 4px 12px;
         border: 1px solid rgba(var(--color-dark-rgb), 0.2);
-        border-radius: 4px;
+        border-radius: 100px;
         white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     }
 
     .notif-attachment-link:hover {
-        border-color: rgba(var(--color-dark-rgb), 0.5);
+        border-color: var(--color-dark);
+        background-color: var(--color-dark);
+        color: var(--color-light);
+        opacity: 1;
     }
 
 /* --- Fetch Results --- */
@@ -1272,7 +1299,7 @@
         height: 72px;
     }
 
-.fr-save-btn {
+    .fr-save-btn {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1289,8 +1316,10 @@
         font-weight: 500;
         cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
         box-sizing: border-box;
-        transition: background-color 0.2s;
+        transition: background-color 0s ease, color 0s ease, border-radius 0s ease;
         flex-shrink: 0;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     [data-theme="dark"] .fr-save-btn {
@@ -1298,9 +1327,10 @@
     }
 
     .fr-save-btn.saved {
-        background-color: var(--color-dark);
-        color: var(--color-light);
-        border-radius: 999px;
+        border-radius: 999px !important;
+        background-color: var(--color-dark) !important;
+        color: var(--color-light) !important;
+        border-color: var(--color-dark) !important;
         cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto !important;
     }
 
@@ -1308,11 +1338,16 @@
         cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
     }
 
-    .fr-save-btn.saved:hover {
-        background-color: var(--color-dark);
+    .fr-save-btn:active,
+    .fr-save-btn.saved:active {
+        border-radius: 12px !important;
     }
 
-    .fr-save-btn:hover {
+    .fr-save-btn.saved:active {
+        border-radius: 999px !important;
+    }
+
+    .fr-save-btn:hover:not(.saved) {
         background-color: rgba(var(--color-dark-rgb), 0.06);
     }
 
@@ -1465,6 +1500,7 @@
         color: var(--color-light);
         font-family: 'Google Sans Code', monospace;
         font-size: 12px;
+        box-sizing: border-box;
         transition: opacity 0.2s;
     }
 
@@ -1489,6 +1525,7 @@
         color: var(--color-light);
         font-family: 'Google Sans Code', monospace;
         font-size: 12px;
+        box-sizing: border-box;
         transition: opacity 0.2s;
     }
 

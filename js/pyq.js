@@ -10,6 +10,17 @@ let selectedPapers = [];
 let zipEnabled = false;
 let lastSearchKey = null;
 let pyqSuggestionIndex = -1;
+let busy = false;
+
+export function isPyqBusy() {
+    return busy;
+}
+
+function blockWhenBusy() {
+    if (!busy) return false;
+    showToast('Please wait for the current operation to finish');
+    return true;
+}
 
 const semesterSelect = document.getElementById('semester-select');
 const subjectSelect = document.getElementById('subject-select');
@@ -21,6 +32,7 @@ const searchButtonText = searchButton.querySelector('.button-text');
 const clearSearchBtn = document.getElementById('clear-search-btn');
 
 function pyqOnSelect(id, value) {
+    if (blockWhenBusy()) return;
     if (id === 'subject-select' && value) {
         inputBox.value = '';
     }
@@ -63,6 +75,8 @@ export async function initializeApp() {
             if (!semesterData[item.semester]) semesterData[item.semester] = [];
             if (!semesterData[item.semester].find(s => s.code === item.subject_code)) {
                 semesterData[item.semester].push({ code: item.subject_code, name: item.subject_name });
+            }
+            if (!allSubjects.find(s => s.code === item.subject_code)) {
                 allSubjects.push({ code: item.subject_code, name: item.subject_name, semester: item.semester });
             }
         });
@@ -107,10 +121,15 @@ function updateActiveSuggestion(list) {
     });
 }
 
+function hidePyqSuggestions() {
+    suggestionsList.classList.remove('show');
+    suggestionsList.innerHTML = '';
+    pyqSuggestionIndex = -1;
+}
+
 function updateSuggestions(query) {
     if (!query || query.length < 1) {
-        suggestionsList.classList.remove('show');
-        pyqSuggestionIndex = -1;
+        hidePyqSuggestions();
         return;
     }
 
@@ -130,8 +149,9 @@ function updateSuggestions(query) {
                 <span class="suggestion-name">${subject.name}</span>
             `;
             div.addEventListener('click', () => {
+                if (blockWhenBusy()) return;
                 inputBox.value = subject.code;
-                suggestionsList.classList.remove('show');
+                hidePyqSuggestions();
 
                 const targetSem = subject.semester;
                 if (!targetSem) return;
@@ -154,7 +174,7 @@ function updateSuggestions(query) {
         });
         suggestionsList.classList.add('show');
     } else {
-        suggestionsList.classList.remove('show');
+        hidePyqSuggestions();
     }
 }
 
@@ -175,21 +195,27 @@ inputBox.addEventListener('keydown', (e) => {
         updateActiveSuggestion(suggestionsList);
         items[pyqSuggestionIndex].scrollIntoView({ block: 'nearest' });
     } else if (e.key === 'Escape') {
-        suggestionsList.classList.remove('show');
-        pyqSuggestionIndex = -1;
+        hidePyqSuggestions();
     } else if (e.key === 'Enter') {
         e.preventDefault();
-        const activeItem = suggestionsList.querySelector('.suggestion-item.active');
-        if (activeItem) {
-            activeItem.click();
-        } else if (items.length > 0) {
-            items[0].click();
+        const query = inputBox.value.trim().toLowerCase();
+        const exactMatch = query && allSubjects.some(s =>
+            s.code.toLowerCase() === query || s.name.toLowerCase() === query);
+        const isVisible = suggestionsList.classList.contains('show');
+        const activeItem = isVisible ? suggestionsList.querySelector('.suggestion-item.active') : null;
+        if (!exactMatch) {
+            if (activeItem) {
+                activeItem.click();
+            } else if (isVisible && items.length > 0) {
+                items[0].click();
+            }
         }
         searchButton.click();
     }
 });
 
 inputBox.addEventListener('input', (e) => {
+    if (blockWhenBusy()) return;
     const value = e.target.value;
     updateSuggestions(value);
 
@@ -211,10 +237,10 @@ inputBox.addEventListener('input', (e) => {
 });
 
 clearSearchBtn.addEventListener('click', () => {
+    if (blockWhenBusy()) return;
     inputBox.value = '';
     clearSearchBtn.classList.remove('show');
-    suggestionsList.classList.remove('show');
-    pyqSuggestionIndex = -1;
+    hidePyqSuggestions();
     resultsContainer.innerHTML = '';
     selectedPapers = [];
     updateDownloadButton();
@@ -229,8 +255,7 @@ clearSearchBtn.addEventListener('click', () => {
 
 document.addEventListener('click', (e) => {
     if (!inputBox.contains(e.target) && !suggestionsList.contains(e.target)) {
-        suggestionsList.classList.remove('show');
-        pyqSuggestionIndex = -1;
+        hidePyqSuggestions();
     }
 });
 
@@ -245,6 +270,7 @@ function updateDownloadButton() {
 }
 
 function togglePaperSelection(paperUrl, element) {
+    if (blockWhenBusy()) return;
     const index = selectedPapers.indexOf(paperUrl);
     if (index > -1) {
         selectedPapers.splice(index, 1);
@@ -258,6 +284,7 @@ function togglePaperSelection(paperUrl, element) {
 }
 
 function toggleSelectAll() {
+    if (blockWhenBusy()) return;
     const paperItems = Array.from(resultsContainer.querySelectorAll('.paper-item'));
     const paperUrls = paperItems.map(el => el.dataset.url).filter(Boolean);
     const allSelected = paperUrls.length > 0 && selectedPapers.length === paperUrls.length;
@@ -286,10 +313,10 @@ function updateSelectAllButton() {
 }
 
 function toggleZipMode() {
+    if (blockWhenBusy()) return;
     zipEnabled = !zipEnabled;
     const zipBtn = document.getElementById('download-zip-btn');
     if (zipBtn) zipBtn.classList.toggle('selected', zipEnabled);
-    updateZipButton();
     updateDownloadButton();
 }
 
@@ -300,7 +327,11 @@ export async function performSearch() {
     let selectedSem = semesterSelect.getAttribute('data-selected-value');
 
     if (selectedCode) {
-        subjectToSearch = allSubjects.find(s => s.code.toUpperCase() === selectedCode);
+        const normalizedInput = selectedCode.replace(/[\s\-_]/g, '');
+        subjectToSearch =
+            allSubjects.find(s => s.code.toUpperCase() === selectedCode) ||
+            allSubjects.find(s => s.name.toUpperCase() === selectedCode) ||
+            allSubjects.find(s => s.code.toUpperCase().replace(/[\s\-_]/g, '') === normalizedInput);
     } else if (selectedDropdownCode) {
         subjectToSearch = allSubjects.find(s => s.code === selectedDropdownCode);
     }
@@ -344,6 +375,8 @@ export async function performSearch() {
         return;
     }
 
+    busy = true;
+
     resultsContainer.innerHTML = '';
     selectedPapers = [];
     zipEnabled = false;
@@ -351,14 +384,12 @@ export async function performSearch() {
 
     inputBox.value = '';
     clearSearchBtn.classList.remove('show');
-    suggestionsList.classList.remove('show');
+    hidePyqSuggestions();
 
     resultsContainer.innerHTML = `
         <div class="results-card loading-container" style="display: flex;">
+            <div class="shape loading-indicator splash-shape"></div>
             <div class="loading-text">FETCHING PAPERS FROM CLOUD</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar"></div>
-            </div>
         </div>
     `;
 
@@ -417,14 +448,14 @@ export async function performSearch() {
 
         const loaderContainer = resultsContainer.querySelector('.loading-container');
         const loadingText = resultsContainer.querySelector('.loading-text');
-        const progressBar = resultsContainer.querySelector('.progress-bar-container');
+        const loadingShape = resultsContainer.querySelector('.shape.loading-indicator');
 
         if (loaderContainer && loadingText) {
             loadingText.style.opacity = '0';
             loadingText.style.transition = 'opacity 0.3s ease';
-            if (progressBar) {
-                progressBar.style.opacity = '0';
-                progressBar.style.transition = 'opacity 0.3s ease';
+            if (loadingShape) {
+                loadingShape.style.opacity = '0';
+                loadingShape.style.transition = 'opacity 0.3s ease';
             }
 
             await new Promise(resolve => setTimeout(resolve, 300));
@@ -474,10 +505,16 @@ export async function performSearch() {
         loaderContainer.className = 'results-card paper-list';
         loaderContainer.setAttribute('data-paper-html', loaderContainer.innerHTML);
 
+        requestAnimationFrame(() => {
+            loaderContainer.style.height = '';
+        });
+
         lastSearchKey = currentKey;
     } catch (e) {
         console.error(e);
         showToast('Failed to fetch from Supabase');
+    } finally {
+        busy = false;
     }
 }
 
@@ -495,13 +532,13 @@ function downloadSelectedPapers() {
     const paperCard = resultsContainer.querySelector('.results-card.paper-list');
     const savedHtml = paperCard ? paperCard.getAttribute('data-paper-html') : null;
 
+    busy = true;
+
     if (paperCard) {
         paperCard.style.height = '72px';
         paperCard.innerHTML = `
+            <div class="shape loading-indicator splash-shape"></div>
             <div class="loading-text">PREPARING YOUR PAPERS</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar"></div>
-            </div>
         `;
         paperCard.classList.add('loading-container');
     }
@@ -532,6 +569,7 @@ function downloadSelectedPapers() {
 
             if (i === papersToDownload.length - 1) {
                 setTimeout(() => {
+                    busy = false;
                     if (paperCard && savedHtml) {
                         paperCard.style.height = paperCard.offsetHeight + 'px';
                         paperCard.innerHTML = savedHtml;
@@ -570,6 +608,8 @@ async function downloadAsZip() {
     const savedHtml = paperCard ? paperCard.getAttribute('data-paper-html') : null;
     const firstPaper = paperCard ? paperCard.querySelector('.paper-item[data-subject-code]') : null;
     const subjectCode = firstPaper ? firstPaper.dataset.subjectCode : 'KTU-Papers';
+
+    busy = true;
 
     if (paperCard) {
         paperCard.style.height = '72px';
@@ -640,30 +680,17 @@ async function downloadAsZip() {
                 paperCard.removeEventListener('transitionend', handler);
             });
         }
+    } finally {
+        busy = false;
     }
 }
 
 let animationActive = false;
 
-searchButton.addEventListener('click', function (e) {
+searchButton.addEventListener('click', function () {
     if (animationActive) return;
+    if (blockWhenBusy()) return;
     animationActive = true;
-
-    const rect = searchButton.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple';
-    const size = Math.max(searchButton.offsetWidth, searchButton.offsetHeight);
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = (x - size / 2) + 'px';
-    ripple.style.top = (y - size / 2) + 'px';
-
-    const existing = searchButton.querySelector('.ripple');
-    if (existing) existing.remove();
-
-    searchButton.appendChild(ripple);
 
     setTimeout(() => {
         animationActive = false;
@@ -678,8 +705,4 @@ searchButton.addEventListener('click', function (e) {
             performSearch();
         }
     }, 100);
-
-    ripple.addEventListener('animationend', () => {
-        ripple.remove();
-    });
 });

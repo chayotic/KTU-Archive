@@ -13,6 +13,11 @@
             padding: 16px;
         }
 
+        .notif-item::after {
+            left: 16px;
+            right: 16px;
+        }
+
         .fr-stats {
             gap: 4px;
         }
@@ -38,7 +43,7 @@
             background: var(--color-light);
             flex-direction: column;
             align-items: flex-start;
-            gap: 12px;
+            gap: 16px;
             padding: 24px;
             padding-top: 88px;
             z-index: 2000;
@@ -60,10 +65,11 @@
             align-items: center;
             gap: 8px;
             width: 100%;
-            padding: 12px 20px;
+            padding: 18px 20px;
             border-radius: 100px;
             font-size: 24px;
             color: var(--color-dark);
+            box-sizing: border-box;
             transition: none;
         }
 
@@ -86,6 +92,8 @@
         .sidebar-icons .material-symbols-outlined.active {
             background: var(--color-dark);
             color: var(--color-light);
+            padding: 18px 28px;
+            margin: 0 -8px;
         }
 
         .sidebar-overlay {
@@ -139,6 +147,11 @@
             padding: 20px 4px;
         }
 
+        #notif-list-full .notif-item::after {
+            left: 4px;
+            right: 4px;
+        }
+
         #notif-list-full .notif-message {
             padding: 20px 4px;
         }
@@ -182,6 +195,22 @@
         .tab-bar {
             margin: 0 0 32px;
             gap: 4px;
+        }
+
+        .tab-btn {
+            height: 52px;
+        }
+
+        .paper-item-left {
+            min-width: 0;
+        }
+
+        .paper-title {
+            display: block;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         #view-all-notif-btn {
@@ -230,7 +259,7 @@
         }
 
         .fr-row .fr-save-btn.saved {
-            border-radius: 8px;
+            border-radius: 999px !important;
         }
 
         .fr-row .fr-save-btn .fr-save-text {
@@ -320,6 +349,11 @@
 
         #notif-list-full .notif-item {
             padding: 32px 40px;
+        }
+
+        #notif-list-full .notif-item::after {
+            left: 40px;
+            right: 40px;
         }
 
         #notif-list-full .notif-message {

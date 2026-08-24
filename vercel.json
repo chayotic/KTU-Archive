@@ -3,6 +3,6 @@
   "cleanUrls": true,
   "framework": "vite",
   "rewrites": [
-    { "source": "/((?!api/|sitemap\\.xml|robots\\.txt|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }

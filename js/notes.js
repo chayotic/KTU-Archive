@@ -9,6 +9,17 @@ let selectedNotesModules = [];
 let notesZipEnabled = false;
 let notesModulesData = [];
 let notesSuggestionIndex = -1;
+let busy = false;
+
+export function isNotesBusy() {
+    return busy;
+}
+
+function blockWhenBusy() {
+    if (!busy) return false;
+    showToast('Please wait for the current operation to finish');
+    return true;
+}
 
 const notesSemesterSelect = document.getElementById('notes-semester-select');
 const notesSubjectSelect = document.getElementById('notes-subject-select');
@@ -19,6 +30,7 @@ const notesClearBtn = document.getElementById('clear-notes-search-btn');
 const notesSuggestions = document.getElementById('notes-suggestions-list');
 
 function notesOnSelect(id, value) {
+    if (blockWhenBusy()) return;
     if (id.startsWith('notes-')) {
         notesResultsContainer.innerHTML = '';
         selectedNotesModules = [];
@@ -97,6 +109,12 @@ function updateNotesActiveSuggestion() {
     });
 }
 
+function hideNotesSuggestions() {
+    notesSuggestions.classList.remove('show');
+    notesSuggestions.innerHTML = '';
+    notesSuggestionIndex = -1;
+}
+
 new MutationObserver(() => {
     if (document.getElementById('notes-section').style.display !== 'none') {
         const sem = notesSemesterSelect.getAttribute('data-selected-value');
@@ -132,17 +150,18 @@ if (notesInput) {
                 ).join('');
                 notesSuggestions.classList.add('show');
             } else {
-                notesSuggestions.classList.remove('show');
+                hideNotesSuggestions();
             }
         } else {
             notesClearBtn.classList.remove('show');
-            notesSuggestions.classList.remove('show');
+            hideNotesSuggestions();
         }
     });
 
     notesSuggestions.addEventListener('click', (e) => {
         const item = e.target.closest('.suggestion-item');
         if (!item) return;
+        if (blockWhenBusy()) return;
 
         const code = item.dataset.code;
         const name = item.dataset.name;
@@ -150,8 +169,7 @@ if (notesInput) {
 
         notesInput.value = code;
         notesClearBtn.classList.remove('show');
-        notesSuggestions.classList.remove('show');
-        notesSuggestionIndex = -1;
+        hideNotesSuggestions();
 
         const semTrigger = notesSemesterSelect.querySelector('.selected-text');
         semTrigger.textContent = semester;
@@ -173,10 +191,10 @@ if (notesInput) {
 
     if (notesClearBtn) {
         notesClearBtn.addEventListener('click', () => {
+            if (blockWhenBusy()) return;
             notesInput.value = '';
             notesClearBtn.classList.remove('show');
-            notesSuggestions.classList.remove('show');
-            notesSuggestionIndex = -1;
+            hideNotesSuggestions();
             notesInput.focus();
             notesResultsContainer.innerHTML = '';
             selectedNotesModules = [];
@@ -199,15 +217,20 @@ if (notesInput) {
             updateNotesActiveSuggestion();
             items[notesSuggestionIndex].scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Escape') {
-            notesSuggestions.classList.remove('show');
-            notesSuggestionIndex = -1;
+            hideNotesSuggestions();
         } else if (e.key === 'Enter') {
             e.preventDefault();
-            const activeItem = notesSuggestions.querySelector('.suggestion-item.active');
-            if (activeItem) {
-                activeItem.click();
-            } else if (items.length > 0) {
-                items[0].click();
+            const query = notesInput.value.trim().toLowerCase();
+            const exactMatch = query && notesSubjects.some(s =>
+                s.code.toLowerCase() === query || s.name.toLowerCase() === query);
+            const isVisible = notesSuggestions.classList.contains('show');
+            const activeItem = isVisible ? notesSuggestions.querySelector('.suggestion-item.active') : null;
+            if (!exactMatch) {
+                if (activeItem) {
+                    activeItem.click();
+                } else if (isVisible && items.length > 0) {
+                    items[0].click();
+                }
             }
             notesSearchBtn.click();
         }
@@ -218,12 +241,12 @@ if (notesInput) {
 
 document.addEventListener('click', (e) => {
     if (notesInput && !notesInput.contains(e.target) && notesSuggestions && !notesSuggestions.contains(e.target)) {
-        notesSuggestions.classList.remove('show');
-        notesSuggestionIndex = -1;
+        hideNotesSuggestions();
     }
 });
 
 notesSearchBtn.addEventListener('click', () => {
+    if (blockWhenBusy()) return;
     if (selectedNotesModules.length > 0) {
         handleNotesDownload();
     } else {
@@ -253,6 +276,7 @@ function updateNotesSelectAllButton() {
 }
 
 function toggleNotesModule(el) {
+    if (blockWhenBusy()) return;
     const index = selectedNotesModules.indexOf(el.dataset.notesModule);
     if (index > -1) {
         selectedNotesModules.splice(index, 1);
@@ -266,12 +290,17 @@ function toggleNotesModule(el) {
 }
 
 export async function searchNotes() {
+    if (blockWhenBusy()) return;
     let subjectToSearch = null;
     let inputCode = notesInput.value.trim().toUpperCase();
     let selectedCode = notesSubjectSelect.getAttribute('data-selected-value');
 
     if (inputCode) {
-        subjectToSearch = notesSubjects.find(s => s.code.toUpperCase() === inputCode);
+        const normalizedInput = inputCode.replace(/[\s\-_]/g, '');
+        subjectToSearch =
+            notesSubjects.find(s => s.code.toUpperCase() === inputCode) ||
+            notesSubjects.find(s => s.name.toUpperCase() === inputCode) ||
+            notesSubjects.find(s => s.code.toUpperCase().replace(/[\s\-_]/g, '') === normalizedInput);
     } else if (selectedCode) {
         subjectToSearch = notesSubjects.find(s => s.code === selectedCode);
     }
@@ -283,10 +312,11 @@ export async function searchNotes() {
 
     notesInput.value = '';
     notesClearBtn.classList.remove('show');
-    notesSuggestions.classList.remove('show');
-    notesSuggestionIndex = -1;
+    hideNotesSuggestions();
 
-    notesResultsContainer.innerHTML = `
+    busy = true;
+    try {
+        notesResultsContainer.innerHTML = `
         <div class="results-card loading-container" style="display: flex;">
             <div class="loading-text">FETCHING NOTES FROM CLOUD</div>
             <div class="progress-bar-container">
@@ -398,6 +428,9 @@ export async function searchNotes() {
     }
 
     renderNotesResults();
+    } finally {
+        busy = false;
+    }
 }
 
 function renderNotesResults() {
@@ -486,6 +519,8 @@ async function handleNotesDownload() {
     const subjectCode = currentNotesSubject?.code || 'Notes';
     const isZip = notesZipEnabled;
 
+    busy = true;
+
     const notesCard = notesResultsContainer.querySelector('.results-card.paper-list');
     const savedHtml = notesCard ? notesCard.getAttribute('data-paper-html') : null;
 
@@ -546,6 +581,7 @@ async function handleNotesDownload() {
         }
 
         setTimeout(() => {
+            busy = false;
             if (notesCard && savedHtml) {
                 notesCard.style.height = notesCard.offsetHeight + 'px';
                 notesCard.innerHTML = savedHtml;

@@ -46,14 +46,17 @@ function toggleNotesExtra(show) {
 }
 
 document.querySelectorAll('[data-upload-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    const activate = () => {
         if (isUploading) return;
+        if (btn.classList.contains('active')) return;
         document.querySelectorAll('[data-upload-tab]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         uploadType = btn.dataset.uploadTab;
         toggleNotesExtra(uploadType === 'notes');
         updateLimits();
-    });
+    };
+    btn.addEventListener('pointerdown', activate);
+    btn.addEventListener('click', activate);
 });
 
 function formatSize(bytes) {
@@ -77,7 +80,9 @@ function renderFileList() {
         });
     });
 
-    uploadBtn.classList.toggle('has-files', pendingFiles.length > 0);
+    const hasFiles = pendingFiles.length > 0;
+    uploadBtn.classList.toggle('has-files', hasFiles);
+    uploadBtn.classList.toggle('ripple', !hasFiles);
 }
 
 function addFiles(files) {

@@ -1,8 +1,8 @@
 import './theme.js';
 import { handleRoute, navigateTo as routerNavigateTo, getPageFromPath, pageToPath } from './router.js';
-import { initializeApp, performSearch } from './pyq.js';
-import { fetchNotesSubjects, searchNotes } from './notes.js';
-import { fullNotifications, renderAllNotifications } from './notifications.js';
+import { initializeApp, performSearch, isPyqBusy } from './pyq.js';
+import { fetchNotesSubjects, searchNotes, isNotesBusy } from './notes.js';
+import { fullNotifications, renderAllNotifications, showNotifLoader } from './notifications.js';
 import { showToast } from './utils.js';
 
 function navigateTo(page) {
@@ -13,7 +13,7 @@ function navigateTo(page) {
         } else {
             const container = document.getElementById('notif-list-full');
             if (container && !container.querySelector('.notif-item')) {
-                container.innerHTML = '<div class="notif-message">Trying to fetch notifications...</div>';
+                showNotifLoader();
             }
         }
     }
@@ -36,6 +36,8 @@ handleRoute(page);
 toggleNotifBtn(page);
 if (page === 'notifications' && fullNotifications.length > 0) {
     renderAllNotifications(fullNotifications);
+} else if (page === 'notifications') {
+    showNotifLoader();
 }
 
 window.addEventListener('popstate', () => {
@@ -44,6 +46,8 @@ window.addEventListener('popstate', () => {
     toggleNotifBtn(p);
     if (p === 'notifications' && fullNotifications.length > 0) {
         renderAllNotifications(fullNotifications);
+    } else if (p === 'notifications') {
+        showNotifLoader();
     }
 });
 
@@ -106,7 +110,12 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    const activate = () => {
+        if (btn.classList.contains('active')) return;
+        if (isPyqBusy() || isNotesBusy()) {
+            showToast('Please wait for the current operation to finish');
+            return;
+        }
         document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
@@ -117,8 +126,9 @@ document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
         if (tab === 'notes') {
             fetchNotesSubjects();
         }
-
-    });
+    };
+    btn.addEventListener('pointerdown', activate);
+    btn.addEventListener('click', activate);
 });
 
 const donateBtn = document.getElementById('donate-btn');
