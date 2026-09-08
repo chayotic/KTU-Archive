@@ -73,7 +73,7 @@
         color: #111111;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1420px) {
         .sidebar-icons {
             display: none;
         }

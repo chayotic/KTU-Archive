@@ -22,7 +22,7 @@ function navigateTo(page) {
 function toggleNotifBtn(page) {
     const btn = document.getElementById('notif-btn');
     if (!btn) return;
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 1420;
     btn.style.display = (page === 'notifications' && isMobile) ? 'none' : '';
 }
 

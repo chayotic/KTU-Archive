@@ -6,6 +6,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "vite",
+    "dev:api": ".venv/bin/python dev_server.py",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -17,5 +18,8 @@
   },
   "dependencies": {
     "jszip": "^3.10.1"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true
   }
 }

@@ -26,7 +26,7 @@ function toggleTheme(originEl) {
         return;
     }
 
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 1420;
 
     if (isMobile) {
         document.startViewTransition(() => {

@@ -32,7 +32,7 @@
         }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1420px) {
         .sidebar-icons {
             display: flex;
             position: fixed;
@@ -342,7 +342,7 @@
         }
     }
 
-    @media (min-width: 769px) {
+    @media (min-width: 1421px) {
         .top-actions-right {
             display: none;
         }

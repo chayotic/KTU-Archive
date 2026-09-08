@@ -25,6 +25,8 @@ export function populateOptions(selectElement, items, valueKey, labelKey, placeh
 export function attachOptionClickHandlers(selectElement, onChange) {
     const container = selectElement.querySelector('.select-options');
     if (!container) return;
+    if (container.dataset.selectHandlersAttached === 'true') return;
+    container.dataset.selectHandlersAttached = 'true';
 
     container.addEventListener('mousedown', (e) => {
         const option = e.target.closest('div');
@@ -47,6 +49,9 @@ export function attachOptionClickHandlers(selectElement, onChange) {
 }
 
 export function initCustomSelect(selectElement) {
+    if (selectElement.dataset.selectInitialized === 'true') return;
+    selectElement.dataset.selectInitialized = 'true';
+
     const trigger = selectElement.querySelector('.select-trigger');
     if (!trigger) return;
 

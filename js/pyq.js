@@ -5,6 +5,8 @@ import { populateOptions, attachOptionClickHandlers, initCustomSelect } from './
 import { fetchNotifications } from './notifications.js';
 
 let semesterData = {};
+let branchNames = {};
+let branchData = {};
 let allSubjects = [];
 let selectedPapers = [];
 let zipEnabled = false;
@@ -22,7 +24,12 @@ function blockWhenBusy() {
     return true;
 }
 
+function semLabel(s) {
+    return `SEMESTER ${s}`;
+}
+
 const semesterSelect = document.getElementById('semester-select');
+const branchSelect = document.getElementById('branch-select');
 const subjectSelect = document.getElementById('subject-select');
 const inputBox = document.querySelector('.input-box');
 const suggestionsList = document.getElementById('suggestions-list');
@@ -33,7 +40,7 @@ const clearSearchBtn = document.getElementById('clear-search-btn');
 
 function pyqOnSelect(id, value) {
     if (blockWhenBusy()) return;
-    if (id === 'subject-select' && value) {
+    if ((id === 'subject-select' || id === 'branch-select') && value) {
         inputBox.value = '';
     }
     if (!id.startsWith('notes-')) {
@@ -42,17 +49,36 @@ function pyqOnSelect(id, value) {
         searchButtonText.textContent = 'SEARCH';
     }
     if (id === 'semester-select') {
+        subjectSelect.setAttribute('data-selected-value', '');
+        subjectSelect.querySelector('.selected-text').textContent = 'SELECT SUBJECT';
+
+        const branches = (branchNames[value] || []).map(b => ({ code: b, name: b }));
+        populateOptions(branchSelect, branches, 'code', 'name', 'SELECT BRANCH');
+        attachOptionClickHandlers(branchSelect, pyqOnSelect);
+        initCustomSelect(branchSelect);
+
+        const autoSelectAllBranches = branches.length === 1;
+        branchSelect.setAttribute('data-selected-value', autoSelectAllBranches ? branches[0].code : '');
+        branchSelect.querySelector('.selected-text').textContent = autoSelectAllBranches ? branches[0].name : 'SELECT BRANCH';
+
         if (value && semesterData[value]) {
-            const subjects = semesterData[value].sort((a, b) => a.name.localeCompare(b.name));
-            const subjectOptions = subjects.map(subj => ({ name: subj.name, code: subj.code }));
-            populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
+            const subjects = semesterData[value].slice().sort((a, b) => a.name.localeCompare(b.name));
+            populateOptions(subjectSelect, subjects, 'code', 'name', 'SELECT SUBJECT');
             attachOptionClickHandlers(subjectSelect, pyqOnSelect);
-            subjectSelect.querySelector('.selected-text').textContent = 'Select Subject';
-            subjectSelect.setAttribute('data-selected-value', '');
-        } else {
-            populateOptions(subjectSelect, [], 'code', 'name', 'Select Subject');
-            attachOptionClickHandlers(subjectSelect, pyqOnSelect);
+            initCustomSelect(subjectSelect);
         }
+    }
+    if (id === 'branch-select') {
+        const sem = semesterSelect.getAttribute('data-selected-value');
+        const branchSubjects = (sem && branchData[sem] && branchData[sem][value])
+            ? branchData[sem][value]
+            : (sem && semesterData[sem]) || [];
+        const subjects = branchSubjects.slice().sort((a, b) => a.name.localeCompare(b.name));
+        populateOptions(subjectSelect, subjects, 'code', 'name', 'SELECT SUBJECT');
+        attachOptionClickHandlers(subjectSelect, pyqOnSelect);
+        initCustomSelect(subjectSelect);
+        subjectSelect.setAttribute('data-selected-value', '');
+        subjectSelect.querySelector('.selected-text').textContent = 'SELECT SUBJECT';
     }
 }
 
@@ -66,26 +92,61 @@ export async function initializeApp() {
             }
         }
 
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/papers?select=subject_code,subject_name,semester`, {
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
-        const data = await response.json();
+        const response = await fetch(`${SUPABASE_URL}/storage/v1/object/public/papers/subject-codes.json?t=${Date.now()}`);
+        if (!response.ok) {
+            throw new Error('CATALOG_FETCH_FAILED');
+        }
+        const catalog = await response.json();
 
-        data.forEach(item => {
-            if (!semesterData[item.semester]) semesterData[item.semester] = [];
-            if (!semesterData[item.semester].find(s => s.code === item.subject_code)) {
-                semesterData[item.semester].push({ code: item.subject_code, name: item.subject_name });
-            }
-            if (!allSubjects.find(s => s.code === item.subject_code)) {
-                allSubjects.push({ code: item.subject_code, name: item.subject_name, semester: item.semester });
-            }
+        Object.keys(catalog).sort().forEach(sem => {
+            const branches = catalog[sem];
+            const branchList = Object.keys(branches);
+            const isCommonSemester = branchList.length === 1;
+            branchNames[sem] = isCommonSemester
+                ? ['ALL BRANCHES']
+                : branchList.map(b => b.toUpperCase()).sort();
+            branchData[sem] = {};
+            const seen = new Set();
+            semesterData[sem] = [];
+            branchList.forEach(branch => {
+                const b = isCommonSemester ? 'ALL BRANCHES' : branch.toUpperCase();
+                branchData[sem][b] = branches[branch]
+                    .map(s => ({ code: s.code.toUpperCase(), name: s.name.toUpperCase() }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                branches[branch].forEach(s => {
+                    const code = s.code.toUpperCase();
+                    if (!seen.has(code)) {
+                        seen.add(code);
+                        const name = s.name.toUpperCase();
+                        semesterData[sem].push({ code, name });
+                        allSubjects.push({ code, name, semester: sem });
+                    }
+                });
+            });
+            semesterData[sem].sort((a, b) => a.name.localeCompare(b.name));
         });
+        branchNames = Object.fromEntries(
+            Object.keys(branchNames).map(sem => [sem, branchNames[sem].sort()])
+        );
 
         const semesterKeys = Object.keys(semesterData).sort();
-        const semesterOptions = semesterKeys.map(key => ({ key, label: key }));
-        populateOptions(semesterSelect, semesterOptions, 'key', 'label', 'Select Semester');
+        const semesterOptions = semesterKeys.map(key => ({ key, label: semLabel(key) }));
+        populateOptions(semesterSelect, semesterOptions, 'key', 'label', 'SELECT SEMESTER');
         attachOptionClickHandlers(semesterSelect, pyqOnSelect);
         initCustomSelect(semesterSelect);
+
+        populateOptions(branchSelect, [], 'code', 'name', 'SELECT BRANCH');
+        attachOptionClickHandlers(branchSelect, pyqOnSelect);
+        const branchTrigger = branchSelect.querySelector('.select-trigger');
+        branchTrigger?.addEventListener('click', function (e) {
+            if (!semesterSelect.getAttribute('data-selected-value')) {
+                e.stopImmediatePropagation();
+                showToast('Select a semester first');
+            }
+        });
+        initCustomSelect(branchSelect);
+
+        populateOptions(subjectSelect, [], 'code', 'name', 'SELECT SUBJECT');
         const subjTrigger = subjectSelect.querySelector('.select-trigger');
         subjTrigger?.addEventListener('click', function (e) {
             if (!semesterSelect.getAttribute('data-selected-value')) {
@@ -133,10 +194,12 @@ function updateSuggestions(query) {
         return;
     }
 
-    const filtered = allSubjects.filter(subject =>
+    const matches = allSubjects.filter(subject =>
         subject.code.toLowerCase().includes(query.toLowerCase()) ||
         subject.name.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
+    );
+
+    const filtered = matches.slice().sort((a, b) => a.name.localeCompare(b.name));
 
     pyqSuggestionIndex = -1;
     if (filtered.length > 0) {
@@ -156,12 +219,17 @@ function updateSuggestions(query) {
                 const targetSem = subject.semester;
                 if (!targetSem) return;
 
-                document.querySelector('#semester-select .selected-text').textContent = targetSem;
+                document.querySelector('#semester-select .selected-text').textContent = semLabel(targetSem);
                 semesterSelect.setAttribute('data-selected-value', targetSem);
-                const subjectsForTargetSem = semesterData[targetSem];
-                const subjectOptions = subjectsForTargetSem.map(s => ({ code: s.code, name: s.name }));
-                populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
+
+                const branchesForSem = (branchNames[targetSem] || []).map(b => ({ code: b, name: b }));
+                populateOptions(branchSelect, branchesForSem, 'code', 'name', 'SELECT BRANCH');
+                attachOptionClickHandlers(branchSelect, pyqOnSelect);
+                initCustomSelect(branchSelect);
+
+                populateOptions(subjectSelect, semesterData[targetSem], 'code', 'name', 'SELECT SUBJECT');
                 attachOptionClickHandlers(subjectSelect, pyqOnSelect);
+                initCustomSelect(subjectSelect);
 
                 document.querySelector('#subject-select .selected-text').textContent = subject.name;
                 subjectSelect.setAttribute('data-selected-value', subject.code);
@@ -224,8 +292,14 @@ inputBox.addEventListener('input', (e) => {
         if (subjectSelect.getAttribute('data-selected-value')) {
             subjectSelect.setAttribute('data-selected-value', '');
             const trigger = subjectSelect.querySelector('.selected-text');
-            if (trigger) trigger.textContent = 'Select Subject';
+            if (trigger) trigger.textContent = 'SELECT SUBJECT';
             subjectSelect.querySelectorAll('.select-options div').forEach(opt => opt.classList.remove('selected'));
+        }
+        if (branchSelect.getAttribute('data-selected-value')) {
+            branchSelect.setAttribute('data-selected-value', '');
+            const trigger = branchSelect.querySelector('.selected-text');
+            if (trigger) trigger.textContent = 'SELECT BRANCH';
+            branchSelect.querySelectorAll('.select-options div').forEach(opt => opt.classList.remove('selected'));
         }
     } else {
         clearSearchBtn.classList.remove('show');
@@ -247,8 +321,13 @@ clearSearchBtn.addEventListener('click', () => {
 
     subjectSelect.setAttribute('data-selected-value', '');
     const subjTrigger = subjectSelect.querySelector('.selected-text');
-    if (subjTrigger) subjTrigger.textContent = 'Select Subject';
+    if (subjTrigger) subjTrigger.textContent = 'SELECT SUBJECT';
     subjectSelect.querySelectorAll('.select-options div').forEach(opt => opt.classList.remove('selected'));
+
+    branchSelect.setAttribute('data-selected-value', '');
+    const branchTrigger = branchSelect.querySelector('.selected-text');
+    if (branchTrigger) branchTrigger.textContent = 'SELECT BRANCH';
+    branchSelect.querySelectorAll('.select-options div').forEach(opt => opt.classList.remove('selected'));
 
     inputBox.focus();
 });
@@ -341,17 +420,22 @@ export async function performSearch() {
         return;
     }
 
-    if (!selectedSem || selectedSem === '' || selectedSem === 'Select Semester' || (selectedCode && selectedSem !== subjectToSearch.semester)) {
+    if (!selectedSem || selectedSem === '' || selectedSem === 'SELECT SEMESTER' || (selectedCode && selectedSem !== subjectToSearch.semester)) {
         selectedSem = subjectToSearch.semester;
         if (selectedSem) {
             semesterSelect.setAttribute('data-selected-value', selectedSem);
             const semesterTrigger = semesterSelect.querySelector('.selected-text');
-            if (semesterTrigger) semesterTrigger.textContent = selectedSem;
+            if (semesterTrigger) semesterTrigger.textContent = semLabel(selectedSem);
 
-            const subjects = semesterData[selectedSem].sort((a, b) => a.name.localeCompare(b.name));
-            const subjectOptions = subjects.map(subj => ({ name: subj.name, code: subj.code }));
-            populateOptions(subjectSelect, subjectOptions, 'code', 'name', 'Select Subject');
+            const branchesForSem = (branchNames[selectedSem] || []).map(b => ({ code: b, name: b }));
+            populateOptions(branchSelect, branchesForSem, 'code', 'name', 'SELECT BRANCH');
+            attachOptionClickHandlers(branchSelect, pyqOnSelect);
+            initCustomSelect(branchSelect);
+
+            const subjects = semesterData[selectedSem].slice().sort((a, b) => a.name.localeCompare(b.name));
+            populateOptions(subjectSelect, subjects, 'code', 'name', 'SELECT SUBJECT');
             attachOptionClickHandlers(subjectSelect, pyqOnSelect);
+            initCustomSelect(subjectSelect);
         }
     }
 
