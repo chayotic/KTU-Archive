@@ -1,4 +1,3 @@
-import JSZip from 'jszip';
 import { SUPABASE_URL, SUPABASE_KEY } from './constants.js';
 import { showToast } from './utils.js';
 import { populateOptions, attachOptionClickHandlers, initCustomSelect } from './ui.js';
@@ -536,6 +535,7 @@ async function handleNotesDownload() {
     const downloadAll = async () => {
         try {
             if (isZip) {
+                const { default: JSZip } = await import('jszip');
                 const zip = new JSZip();
                 for (let i = 0; i < selectedModules.length; i++) {
                     const mod = selectedModules[i];

@@ -53,12 +53,7 @@
 
     .search-button,
     .search-button * {
-        cursor: url('/assets/cursor/cursor-dark.svg') 2 2, auto !important;
-    }
-
-    [data-theme="dark"] .search-button,
-    [data-theme="dark"] .search-button * {
-        cursor: url('/assets/cursor/cursor-light.svg') 2 2, auto !important;
+        cursor: pointer !important;
     }
 
     body {

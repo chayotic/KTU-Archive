@@ -1,5 +1,63 @@
 import { populateOptions, attachOptionClickHandlers, initCustomSelect } from './ui.js';
 
+let sessionKey = null;
+const CRED_KEY = 'ktu_cred_key';
+const CRED_DATA = 'ktu_credentials';
+
+function uint8ToBase64(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+}
+
+function base64ToUint8(str) {
+    const bin = atob(str);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+}
+
+async function generateKey() {
+    const stored = localStorage.getItem(CRED_KEY);
+    if (stored) {
+        sessionKey = await crypto.subtle.importKey('jwk', JSON.parse(stored), { name: 'AES-GCM' }, true, ['encrypt', 'decrypt']);
+        return;
+    }
+    sessionKey = await crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+    );
+    const exported = await crypto.subtle.exportKey('jwk', sessionKey);
+    localStorage.setItem(CRED_KEY, JSON.stringify(exported));
+}
+
+async function encryptCredentials(data) {
+    if (!sessionKey) await generateKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(data));
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, sessionKey, encoded);
+    return JSON.stringify({
+        ciphertext: uint8ToBase64(new Uint8Array(ciphertext)),
+        iv: uint8ToBase64(iv)
+    });
+}
+
+async function decryptCredentials(encryptedJSON) {
+    if (!sessionKey) return null;
+    try {
+        const { ciphertext, iv } = JSON.parse(encryptedJSON);
+        const decrypted = await crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: base64ToUint8(iv) },
+            sessionKey,
+            base64ToUint8(ciphertext)
+        );
+        return JSON.parse(new TextDecoder().decode(decrypted));
+    } catch {
+        return null;
+    }
+}
+
 const frUsername = document.getElementById('fr-username');
 const frPassword = document.getElementById('fr-password');
 const frSemesterSelect = document.getElementById('fr-semester-select');
@@ -36,9 +94,23 @@ populateOptions(frSemesterSelect, semesters, 'key', 'label', 'Select Semester');
 attachOptionClickHandlers(frSemesterSelect, () => {});
 initCustomSelect(frSemesterSelect);
 
-let savedCredentials = JSON.parse(sessionStorage.getItem('ktu_credentials') || 'null');
+let savedCredentials = null;
 
-function applySavedCredentials() {
+function cryptoAvailable() {
+    return window.isSecureContext && window.crypto && window.crypto.subtle;
+}
+
+async function loadSavedCredentials() {
+    const raw = localStorage.getItem(CRED_DATA);
+    if (!raw) return null;
+    if (!cryptoAvailable()) return null;
+    if (!sessionKey) await generateKey();
+    return await decryptCredentials(raw);
+}
+
+async function applySavedCredentials() {
+    if (!frUsername || !frPassword || !frSaveBtn) return;
+    savedCredentials = await loadSavedCredentials();
     if (savedCredentials) {
         frUsername.value = savedCredentials.username || '';
         frPassword.value = savedCredentials.password || '';
@@ -47,19 +119,33 @@ function applySavedCredentials() {
     }
 }
 
-function toggleSaveCredentials() {
+async function toggleSaveCredentials() {
     const isSaved = frSaveBtn.classList.toggle('saved');
-    if (frSaveCheck) frSaveCheck.style.display = isSaved ? 'block' : 'none';
 
     if (isSaved) {
-        savedCredentials = {
-            username: frUsername.value.trim(),
-            password: frPassword.value.trim()
-        };
-        sessionStorage.setItem('ktu_credentials', JSON.stringify(savedCredentials));
+        const username = frUsername.value.trim();
+        const password = frPassword.value.trim();
+        if (!username || !password) {
+            frSaveBtn.classList.remove('saved');
+            return;
+        }
+        if (!cryptoAvailable()) {
+            frSaveBtn.classList.remove('saved');
+            return;
+        }
+        try {
+            savedCredentials = { username, password };
+            const encrypted = await encryptCredentials(savedCredentials);
+            localStorage.setItem(CRED_DATA, encrypted);
+            if (frSaveCheck) frSaveCheck.style.display = 'block';
+        } catch {
+            frSaveBtn.classList.remove('saved');
+            savedCredentials = null;
+        }
     } else {
         savedCredentials = null;
-        sessionStorage.removeItem('ktu_credentials');
+        localStorage.removeItem(CRED_DATA);
+        if (frSaveCheck) frSaveCheck.style.display = 'none';
     }
 }
 
@@ -67,9 +153,17 @@ frSaveBtn?.addEventListener('click', toggleSaveCredentials);
 
 function setLoading(loading) {
     frLoading.style.display = loading ? 'flex' : 'none';
-    frLoading.style.flexDirection = 'column';
     frFetchBtn.disabled = loading;
-    frFetchBtn.querySelector('.button-text').textContent = loading ? 'FETCHING...' : 'FETCH RESULTS';
+    const btnText = frFetchBtn.querySelector('.button-text');
+    const btnSpinner = frFetchBtn.querySelector('.button-spinner');
+    if (loading) {
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'flex';
+    } else {
+        btnText.style.display = '';
+        btnSpinner.style.display = 'none';
+        btnText.textContent = 'FETCH RESULTS';
+    }
 }
 
 function addLogEntry(msg) {
@@ -288,4 +382,4 @@ document.getElementById('fr-fetch-btn')?.addEventListener('click', async () => {
     }
 });
 
-applySavedCredentials();
+applySavedCredentials().catch(() => {});

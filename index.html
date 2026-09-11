@@ -17,7 +17,6 @@
     <link rel="canonical" href="https://ktu-archive.vercel.app/">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="canonical" href="https://ktu-archive.vercel.app/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -281,7 +280,7 @@
                 </div>
 
                 <div class="dropdown-group" id="subject-select-group">
-                    <div class="custom-select" id="subject-select">
+                    <div class="custom-select show-option-code" id="subject-select">
                         <div class="select-trigger">
                             <div class="text-chevron-group">
                                 <span class="selected-text">SELECT SUBJECT</span>
@@ -326,7 +325,7 @@
                         <div class="select-options"></div>
                     </div>
 
-                    <div class="custom-select" id="notes-subject-select">
+                    <div class="custom-select show-option-code" id="notes-subject-select">
                         <div class="select-trigger">
                             <div class="text-chevron-group">
                                 <span class="selected-text">Select Subject</span>
@@ -427,6 +426,9 @@
                     <div class="action-stack">
                         <button class="search-button ripple" id="fr-fetch-btn">
                             <span class="button-text">FETCH RESULTS</span>
+                            <span class="button-spinner" style="display:none;">
+                                <span class="shape loading-indicator"></span>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -436,7 +438,6 @@
                     convenience.</p>
 
                 <div id="fr-loading" class="fr-loading-card" style="display: none;">
-                    <div class="shape loading-indicator fr-loading-shape"></div>
                     <div class="fr-log" id="fr-log"></div>
                 </div>
             </div>

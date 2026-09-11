@@ -1,4 +1,3 @@
-import JSZip from 'jszip';
 import { SUPABASE_URL, SUPABASE_KEY, NOTIF_CACHE_TTL } from './constants.js';
 import { showToast } from './utils.js';
 import { populateOptions, attachOptionClickHandlers, initCustomSelect } from './ui.js';
@@ -705,6 +704,7 @@ async function downloadAsZip() {
     }
 
     try {
+        const { default: JSZip } = await import('jszip');
         const zip = new JSZip();
 
         for (let i = 0; i < selectedPapers.length; i++) {

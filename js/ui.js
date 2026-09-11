@@ -10,10 +10,28 @@ export function populateOptions(selectElement, items, valueKey, labelKey, placeh
     ph.textContent = placeholder || 'Select...';
     container.appendChild(ph);
 
+    const showCodes = selectElement.classList.contains('show-option-code');
+
     items.forEach(item => {
         const div = document.createElement('div');
         div.dataset.value = item[valueKey];
-        div.textContent = item[labelKey];
+        div.dataset.text = item[labelKey];
+
+        const code = item.code != null ? String(item.code) : '';
+        if (showCodes && code && code !== String(item[labelKey])) {
+            div.className = 'option-with-code';
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.textContent = item[labelKey];
+            const codeSpan = document.createElement('span');
+            codeSpan.className = 'option-code';
+            codeSpan.textContent = code;
+            div.appendChild(label);
+            div.appendChild(codeSpan);
+        } else {
+            div.textContent = item[labelKey];
+        }
+
         container.appendChild(div);
     });
 
@@ -33,7 +51,7 @@ export function attachOptionClickHandlers(selectElement, onChange) {
         if (!option) return;
 
         const value = option.dataset.value;
-        const text = option.textContent;
+        const text = option.dataset.text || option.textContent;
 
         container.querySelectorAll('div').forEach(opt => opt.classList.remove('selected'));
         option.classList.add('selected');
