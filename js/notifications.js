@@ -21,7 +21,13 @@ let notifRetryInterval = null;
 let dotInterval = null;
 let hasLoadedOnce = false;
 
+let notifFailed = false;
+
 export function showNotifLoader() {
+    if (notifFailed) {
+        setNotifMessage('Failed to fetch notifications. Please try again later.');
+        return;
+    }
     const loader = `
         <div class="shape loading-indicator splash-shape"></div>
         <span>Trying to fetch notifications</span>
@@ -57,8 +63,23 @@ export function fetchNotifications() {
         notifRetryInterval = setInterval(fetchNotifications, 10000);
     }
 
-    fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?')
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    fetch('https://ktu-announcements-api-wxk8.onrender.com/health', { signal: controller.signal })
         .then(response => {
+            if (!response.ok) throw new Error('Health check failed');
+            return response.json();
+        })
+        .then(health => {
+            clearTimeout(timeoutId);
+            if (!health || health.status !== 'online' || health.has_token !== true || health.last_error) {
+                throw new Error('Announcements API is not working: ' + (health && health.last_error ? health.last_error : 'token missing'));
+            }
+            return fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?');
+        })
+        .then(response => {
+            if (!response) return;
             if (!response.ok) throw new Error('API server returned error status');
             return response.json();
         })
@@ -68,6 +89,7 @@ export function fetchNotifications() {
                 localStorage.setItem(NOTIF_CACHE_KEY, JSON.stringify({ data: sorted, timestamp: Date.now() }));
                 stopDotAnimation();
                 renderNotifications(sorted);
+                notifFailed = false;
                 if (!hasLoadedOnce) {
                     hasLoadedOnce = true;
                     if (notifRetryInterval) {
@@ -78,7 +100,15 @@ export function fetchNotifications() {
             }
         })
         .catch(error => {
+            clearTimeout(timeoutId);
             console.warn('Failed to fetch notifications:', error);
+            stopDotAnimation();
+            if (notifRetryInterval) {
+                clearInterval(notifRetryInterval);
+                notifRetryInterval = null;
+            }
+            setNotifMessage('Failed to fetch notifications. Please try again later.');
+            notifFailed = true;
         });
 }
 

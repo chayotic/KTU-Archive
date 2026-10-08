@@ -9,11 +9,10 @@
 ## KTU PYQ & NOTES DOWNLOADER
 Download **2024 Scheme** Previous Year Question Papers & Module-Wise Notes For APJ Abdul Kalam Technological University (KTU).
 
-## KTU RESULT FETCHER
-Fetch Your **KTU Grade Card** From [app.ktu.edu.in](https://app.ktu.edu.in).
-This Tool Bypasses The **504 GATEWAY TIMEOUT** Error. 
-<br>
-<sub> for more details, visit [FKtuResults](https://github.com/prawmathean/FKtuResults).
+## KTU CLOUDFLARE TURNSTILE (OCT 2026)
+Recently, [ktu.edu.in](https://ktu.edu.in/) added cloudflare turnstile tool to protect their website from bots and scrapers.
+[KTU Announcements API](https://github.com/ratherpixelate/ktu-announcements-api) & [FKtuResults](https://github.com/prawmathean/FKtuResults) have been affected and are currently not working.
+We're looking into options and will update this section once they're back.
 
 ---
 
@@ -36,7 +35,7 @@ git clone https://github.com/chayotic/KTU-Archive.git
 
 ### Support this Project
 <a href="https://www.chai4.me/rohithpai">
-  <img src="public/assets/donate/chai4me.svg" alt="Chai4Me" width="100" height="36">
+  <img src="https://raw.githubusercontent.com/chayotic/KTU-Archive/main/public/assets/donate/chai4me.svg" alt="Chai4Me" width="92" />
 </a>
 
 ---
