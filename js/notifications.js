@@ -17,11 +17,15 @@ function setNotifMessage(msg) {
     }
 }
 
-let notifRetryInterval = null;
+let notifRetryTimeout = null;
 let dotInterval = null;
 let hasLoadedOnce = false;
 
 let notifFailed = false;
+let notifAttempts = 0;
+
+const NOTIF_MAX_ATTEMPTS = 3;
+const NOTIF_RETRY_DELAY = 1000;
 
 export function showNotifLoader() {
     if (notifFailed) {
@@ -55,12 +59,13 @@ function stopDotAnimation() {
 }
 
 export function fetchNotifications() {
-    if (!hasLoadedOnce && !notifRetryInterval) {
+    if (notifFailed) return;
+
+    if (!hasLoadedOnce && notifAttempts === 0) {
         showNotifLoader();
         startDotAnimation();
         if (notifFeed) notifFeed.style.display = 'block';
         if (notifBtn) notifBtn.style.display = 'flex-start';
-        notifRetryInterval = setInterval(fetchNotifications, 10000);
     }
 
     const controller = new AbortController();
@@ -90,26 +95,34 @@ export function fetchNotifications() {
                 stopDotAnimation();
                 renderNotifications(sorted);
                 notifFailed = false;
-                if (!hasLoadedOnce) {
-                    hasLoadedOnce = true;
-                    if (notifRetryInterval) {
-                        clearInterval(notifRetryInterval);
-                        notifRetryInterval = null;
-                    }
-                }
+                notifAttempts = 0;
+                hasLoadedOnce = true;
             }
         })
         .catch(error => {
             clearTimeout(timeoutId);
             console.warn('Failed to fetch notifications:', error);
-            stopDotAnimation();
-            if (notifRetryInterval) {
-                clearInterval(notifRetryInterval);
-                notifRetryInterval = null;
-            }
-            setNotifMessage('Failed to fetch notifications. Please try again later.');
-            notifFailed = true;
+            handleNotifFailure();
         });
+}
+
+function handleNotifFailure() {
+    notifAttempts += 1;
+
+    if (notifAttempts >= NOTIF_MAX_ATTEMPTS) {
+        notifFailed = true;
+        stopDotAnimation();
+        if (fullNotifications.length === 0) {
+            setNotifMessage('Failed to fetch notifications. Please try again later.');
+        }
+        return;
+    }
+
+    if (notifRetryTimeout) clearTimeout(notifRetryTimeout);
+    notifRetryTimeout = setTimeout(() => {
+        notifRetryTimeout = null;
+        fetchNotifications();
+    }, NOTIF_RETRY_DELAY);
 }
 
 function renderNotifications(notifications) {

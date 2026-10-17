@@ -181,14 +181,10 @@ function clearLog() {
 }
 
 function showError(msg) {
-    frError.textContent = 'This tool is currently not working because ktu.edu.in added Cloudflare Turnstile protection to their website.';
+    frError.textContent = msg;
     frError.style.display = 'block';
     frResults.style.display = 'none';
 }
-
-const TURNSTLE_ERROR = 'This tool is currently not working because ktu.edu.in added Cloudflare Turnstile protection to their website.';
-frError.textContent = TURNSTLE_ERROR;
-frError.style.display = 'block';
 
 function reorderHeaders(headers) {
     const patterns = [/course code/i, /subject code/i, /^code$/i, /subject name/i, /^subject$/i, /course name/i];
@@ -261,8 +257,7 @@ function showResultsView(data) {
 function backToLogin() {
     frResults.style.display = 'none';
     frLoginView.style.display = '';
-    frError.textContent = 'This tool is currently not working because ktu.edu.in added Cloudflare Turnstile protection to their website.';
-    frError.style.display = 'block';
+    frError.style.display = 'none';
 
     if (!frSaveBtn.classList.contains('saved')) {
         frUsername.value = '';
@@ -334,12 +329,6 @@ document.getElementById('fr-fetch-btn')?.addEventListener('click', async () => {
         showError('Please fill in all fields.');
         return;
     }
-
-    setLoading(false);
-    frError.textContent = 'This tool is currently not working because ktu.edu.in added Cloudflare Turnstile protection to their website.';
-    frError.style.display = 'block';
-    frResults.style.display = 'none';
-    return;
 
     setLoading(true);
     frError.style.display = 'none';
