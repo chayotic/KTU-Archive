@@ -71,33 +71,27 @@ export function fetchNotifications() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    fetch('https://ktu-announcements-api-wxk8.onrender.com/health', { signal: controller.signal })
+    fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?', { signal: controller.signal })
         .then(response => {
-            if (!response.ok) throw new Error('Health check failed');
-            return response.json();
-        })
-        .then(health => {
-            clearTimeout(timeoutId);
-            if (!health || health.status !== 'online' || health.has_token !== true || health.last_error) {
-                throw new Error('Announcements API is not working: ' + (health && health.last_error ? health.last_error : 'token missing'));
-            }
-            return fetch('https://ktu-announcements-api-wxk8.onrender.com/announcements?');
-        })
-        .then(response => {
-            if (!response) return;
             if (!response.ok) throw new Error('API server returned error status');
             return response.json();
         })
         .then(result => {
-            if (result && result.success && Array.isArray(result.data)) {
-                const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                localStorage.setItem(NOTIF_CACHE_KEY, JSON.stringify({ data: sorted, timestamp: Date.now() }));
-                stopDotAnimation();
-                renderNotifications(sorted);
-                notifFailed = false;
-                notifAttempts = 0;
-                hasLoadedOnce = true;
+            clearTimeout(timeoutId);
+            if (!result || !result.success || !Array.isArray(result.data) || result.data.length === 0) {
+                throw new Error('API returned no notifications');
             }
+            const sorted = result.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            try {
+                localStorage.setItem(NOTIF_CACHE_KEY, JSON.stringify({ data: sorted, timestamp: Date.now() }));
+            } catch (e) {
+                console.warn('Failed to cache notifications:', e);
+            }
+            stopDotAnimation();
+            renderNotifications(sorted);
+            notifFailed = false;
+            notifAttempts = 0;
+            hasLoadedOnce = true;
         })
         .catch(error => {
             clearTimeout(timeoutId);
