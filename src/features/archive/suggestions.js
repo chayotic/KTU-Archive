@@ -171,6 +171,24 @@ export function mountSearchSuggestions(filtersReady, root = document) {
     render();
   }
 
+  function scrollSearchToTop() {
+    if (window.innerWidth >= 600) return;
+    const topBar = root.querySelector('.md3-top-bar');
+    const offset = (topBar?.getBoundingClientRect().height ?? 72) + 16;
+    const top = wrapper.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+  }
+
+  input.addEventListener('focus', () => {
+    scrollSearchToTop();
+    window.setTimeout(scrollSearchToTop, 350);
+  });
+
+  input.addEventListener('click', () => {
+    scrollSearchToTop();
+    window.setTimeout(scrollSearchToTop, 350);
+  });
+
   input.addEventListener('input', () => {
     paintIcon();
     update(input.value);
