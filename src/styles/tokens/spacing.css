@@ -1,0 +1,25 @@
+@layer tokens {
+  :root {
+    --md-sys-spacing-0: 0;
+    --md-sys-spacing-1: 4px;
+    --md-sys-spacing-2: 8px;
+    --md-sys-spacing-3: 12px;
+    --md-sys-spacing-4: 16px;
+    --md-sys-spacing-5: 20px;
+    --md-sys-spacing-6: 24px;
+    --md-sys-spacing-8: 32px;
+    --md-sys-spacing-10: 40px;
+    --md-sys-spacing-12: 48px;
+    --md-sys-spacing-16: 64px;
+    --md-sys-spacing-20: 80px;
+    --md-sys-spacing-24: 96px;
+
+    --md-sys-layout-margin: var(--md-sys-spacing-4);
+  }
+
+  @media (min-width: 600px) {
+    :root {
+      --md-sys-layout-margin: var(--md-sys-spacing-6);
+    }
+  }
+}

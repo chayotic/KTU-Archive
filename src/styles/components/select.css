@@ -1,0 +1,105 @@
+.beer .md3-select__anchor {
+  position: relative;
+}
+
+.beer .md3-select__anchor > .md3-select__button {
+  display: flex;
+  inline-size: 100%;
+  block-size: 4.5rem;
+  justify-content: space-between;
+  padding-inline: 0.9375rem;
+  border-color: var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.beer .md3-select__anchor > .md3-select__button.has-value {
+  color: var(--md-sys-color-on-surface);
+}
+
+.beer .md3-select__anchor > .md3-select__button:active {
+  border-radius: var(--md-sys-shape-corner-extra-small) !important;
+}
+
+.beer .md3-select__anchor > .md3-select__button > i {
+  color: var(--md-sys-color-on-surface-variant);
+  transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.beer .md3-select__anchor > .md3-select__button > [data-select-label] {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.beer .md3-select__anchor > .md3-select__button:disabled {
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: default;
+}
+
+.beer .md3-select__anchor > .md3-select__button[aria-expanded='true'] > i {
+  transform: rotate(180deg);
+}
+
+.beer .md3-select__anchor[data-select] > menu {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.8) translateY(120%);
+}
+
+.beer .md3-select__anchor[data-select] > menu.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1) translateY(100%);
+}
+
+.beer .md3-select__anchor > menu {
+  max-block-size: 20rem;
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.beer .md3-select__anchor > menu > li {
+  flex: none;
+  min-block-size: 3.5rem;
+  padding-block: 0.875rem;
+  line-height: 1.25rem;
+  white-space: normal;
+}
+
+.beer .md3-select__anchor > menu > li[aria-selected='true'] {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.beer .md3-select__anchor > menu > li.has-description {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  text-align: start;
+}
+
+.beer .md3-select__anchor > menu > li.has-description .md3-select__option-label {
+  color: inherit;
+  font: var(--md-sys-typescale-body-medium);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+}
+
+.beer .md3-select__anchor > menu > li.has-description .md3-select__option-description {
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-small);
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
+}
+
+.beer .md3-select__anchor > menu > li.has-description[aria-selected='true'] .md3-select__option-description {
+  color: var(--md-sys-color-on-primary-container);
+}

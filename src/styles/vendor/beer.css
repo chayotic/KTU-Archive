@@ -1,0 +1,130 @@
+@import 'beercss/dist/cdn/settings/global.scoped.css';
+@import 'beercss/dist/cdn/settings/reset.scoped.css';
+@import 'beercss/dist/cdn/helpers/form.scoped.css';
+@import 'beercss/dist/cdn/elements/button.scoped.css';
+@import 'beercss/dist/cdn/elements/field.scoped.css';
+@import 'beercss/dist/cdn/elements/icon.scoped.css';
+@import 'beercss/dist/cdn/elements/menu.scoped.css';
+@import 'beercss/dist/cdn/elements/navigation.scoped.css';
+@import 'beercss/dist/cdn/elements/progress.scoped.css';
+@import 'beercss/dist/cdn/elements/selection.scoped.css';
+@import 'beercss/dist/cdn/elements/shape.scoped.css';
+
+.beer {
+  --primary: var(--md-sys-color-primary);
+  --on-primary: var(--md-sys-color-on-primary);
+  --primary-container: var(--md-sys-color-primary-container);
+  --on-primary-container: var(--md-sys-color-on-primary-container);
+  --secondary: var(--md-sys-color-secondary);
+  --on-secondary: var(--md-sys-color-on-secondary);
+  --secondary-container: var(--md-sys-color-secondary-container);
+  --on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --tertiary: var(--md-sys-color-tertiary);
+  --on-tertiary: var(--md-sys-color-on-tertiary);
+  --tertiary-container: var(--md-sys-color-tertiary-container);
+  --on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+  --error: var(--md-sys-color-error);
+  --on-error: var(--md-sys-color-on-error);
+  --error-container: var(--md-sys-color-error-container);
+  --on-error-container: var(--md-sys-color-on-error-container);
+  --background: var(--md-sys-color-surface);
+  --on-background: var(--md-sys-color-on-surface);
+  --surface: var(--md-sys-color-surface);
+  --on-surface: var(--md-sys-color-on-surface);
+  --surface-variant: var(--md-sys-color-surface-container-highest);
+  --on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --outline: var(--md-sys-color-outline);
+  --outline-variant: var(--md-sys-color-outline-variant);
+  --inverse-surface: var(--md-sys-color-inverse-surface);
+  --inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+  --inverse-primary: var(--md-sys-color-inverse-primary);
+  --surface-dim: var(--md-sys-color-surface-dim);
+  --surface-bright: var(--md-sys-color-surface-bright);
+  --surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --surface-container-low: var(--md-sys-color-surface-container-low);
+  --surface-container: var(--md-sys-color-surface-container);
+  --surface-container-high: var(--md-sys-color-surface-container-high);
+  --surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --on-surface-container: var(--md-sys-color-on-surface);
+
+  --font: var(--md-ref-typeface-plain);
+  --font-icon: 'Material Symbols Rounded';
+  --size: 1rem;
+
+  --speed1: var(--md-sys-motion-duration-short2);
+  --speed2: var(--md-sys-motion-duration-short4);
+  --speed3: var(--md-sys-motion-duration-medium2);
+
+  --elevate1: var(--md-sys-elevation-level1);
+  --elevate2: var(--md-sys-elevation-level2);
+}
+
+.beer .field.label > label {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.beer .field.label > :focus + label {
+  color: var(--md-sys-color-primary);
+}
+
+.beer .field > :is(input, textarea) {
+  caret-color: var(--md-sys-color-primary);
+}
+
+.beer .field > :is(input, textarea)::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 1;
+}
+
+.beer.md3-field .field {
+  --_input: 4.5rem;
+}
+
+.beer.md3-field .field > input {
+  font-size: 1.125rem;
+}
+
+.beer .field > i[data-search-icon] {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.beer.md3-footer-card__loader {
+  background-color: transparent;
+}
+
+.beer .md3-footer-card__shape {
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+}
+
+.beer.md3-search-button__loader {
+  display: inline-flex;
+  background-color: transparent;
+}
+
+.beer .shape.md3-search-button__shape {
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+  background-color: var(--md-sys-color-on-primary);
+}
+
+.beer .field.suffix > i {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.beer.md3-notification__attachments .button {
+  --_padding: 0.5rem;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: normal;
+}
+
+.beer.md3-notification__attachments .button > i {
+  --_size: 0.75rem;
+}
+
+.beer .shape.md3-attachment__loader {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+}

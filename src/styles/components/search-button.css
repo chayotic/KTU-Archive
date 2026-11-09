@@ -1,0 +1,44 @@
+@layer components {
+  .md3-search-button {
+    display: flex;
+    inline-size: 100%;
+    min-block-size: 4.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: var(--md-sys-spacing-3);
+    padding-inline: var(--md-sys-spacing-6);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    background-color: transparent;
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-medium);
+    letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast),
+      border-color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast),
+      color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast),
+      opacity var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast);
+  }
+
+  .md3-search-button:disabled,
+  .md3-search-button[aria-disabled='true'] {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .md3-search-button:not(:disabled):not([aria-disabled='true']),
+  .md3-search-button.is-loading {
+    border-color: transparent;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    opacity: 1;
+  }
+
+  .md3-search-button:focus-visible {
+    outline: 3px solid var(--md-sys-color-on-surface);
+    outline-offset: 2px;
+  }
+}

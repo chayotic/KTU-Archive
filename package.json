@@ -1,0 +1,19 @@
+{
+  "name": "ktu-archive",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "KTU Archive redesign built on Material 3 Expressive.",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "python3 dev_server.py",
+    "build": "vite build && node scripts/seo.mjs",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "beercss": "^5.0.3"
+  }
+}

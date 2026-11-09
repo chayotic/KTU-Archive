@@ -1,0 +1,81 @@
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    --md-sys-color-primary: light-dark(#1b1b1e, #e7e1e8);
+    --md-sys-color-on-primary: light-dark(#ffffff, #302d35);
+    --md-sys-color-primary-container: light-dark(#e4e1e7, #48454e);
+    --md-sys-color-on-primary-container: light-dark(#1b1b1e, #e7e1e8);
+    --md-sys-color-primary-fixed: #e4e1e7;
+    --md-sys-color-primary-fixed-dim: #c8c4cc;
+    --md-sys-color-on-primary-fixed: #1b1b1e;
+    --md-sys-color-on-primary-fixed-variant: #48454d;
+
+    --md-sys-color-secondary: light-dark(#5f5d63, #c9c5cd);
+    --md-sys-color-on-secondary: light-dark(#ffffff, #302d35);
+    --md-sys-color-secondary-container: light-dark(#e5e1e7, #47444c);
+    --md-sys-color-on-secondary-container: light-dark(#1b1b1e, #e7e1e8);
+    --md-sys-color-secondary-fixed: #e5e1e7;
+    --md-sys-color-secondary-fixed-dim: #c9c5cd;
+    --md-sys-color-on-secondary-fixed: #1b1b1e;
+    --md-sys-color-on-secondary-fixed-variant: #48454d;
+
+    --md-sys-color-tertiary: light-dark(#48464c, #aeabb2);
+    --md-sys-color-on-tertiary: light-dark(#ffffff, #302d35);
+    --md-sys-color-tertiary-container: light-dark(#e2dfe5, #46434a);
+    --md-sys-color-on-tertiary-container: light-dark(#1b1b1e, #e7e1e8);
+    --md-sys-color-tertiary-fixed: #e2dfe5;
+    --md-sys-color-tertiary-fixed-dim: #c6c2ca;
+    --md-sys-color-on-tertiary-fixed: #1b1b1e;
+    --md-sys-color-on-tertiary-fixed-variant: #48454d;
+
+    --md-sys-color-error: light-dark(#ba1a1a, #ffb4ab);
+    --md-sys-color-on-error: light-dark(#ffffff, #690005);
+    --md-sys-color-error-container: light-dark(#ffdad6, #93000a);
+    --md-sys-color-on-error-container: light-dark(#410002, #ffdad6);
+
+    --md-sys-color-success: light-dark(#2f6a3d, #9dd7a7);
+    --md-sys-color-success-container: light-dark(#d8ecdb, #24452f);
+    --md-sys-color-on-success-container: light-dark(#102b18, #d8ecdb);
+    --md-sys-color-warning: light-dark(#7a5a00, #e8c66a);
+    --md-sys-color-warning-container: light-dark(#f6ecc6, #4a3d16);
+    --md-sys-color-on-warning-container: light-dark(#342800, #f6ecc6);
+
+    --md-sys-color-error-container-inverse: light-dark(#93000a, #ffdad6);
+    --md-sys-color-on-error-container-inverse: light-dark(#ffdad6, #93000a);
+    --md-sys-color-warning-container-inverse: light-dark(#e7d79f, #f6ecc6);
+    --md-sys-color-on-warning-container-inverse: light-dark(#3a2d00, #4a3d16);
+    --md-sys-color-success-container-inverse: light-dark(#24452f, #d8ecdb);
+    --md-sys-color-on-success-container-inverse: light-dark(#d8ecdb, #24452f);
+
+    --md-sys-color-surface: light-dark(#fcfbfd, #141217);
+    --md-sys-color-on-surface: light-dark(#1b1b1e, #e7e1e8);
+    --md-sys-color-on-surface-variant: light-dark(#47464b, #c9c5cd);
+    --md-sys-color-surface-dim: light-dark(#dcdade, #141217);
+    --md-sys-color-surface-bright: light-dark(#fcfbfd, #3b383f);
+    --md-sys-color-surface-container-lowest: light-dark(#ffffff, #0f0d12);
+    --md-sys-color-surface-container-low: light-dark(#f6f4f8, #1c1a1f);
+    --md-sys-color-surface-container: light-dark(#f0eef3, #201e24);
+    --md-sys-color-surface-container-high: light-dark(#eae8ed, #2b282f);
+    --md-sys-color-surface-container-highest: light-dark(#e4e2e7, #36333a);
+    --md-sys-color-surface-tint: light-dark(#1b1b1e, #e7e1e8);
+
+    --md-sys-color-outline: light-dark(#78767c, #8e8b93);
+    --md-sys-color-outline-variant: light-dark(#c8c5cc, #49464e);
+
+    --md-sys-color-inverse-surface: light-dark(#313035, #e7e1e8);
+    --md-sys-color-inverse-on-surface: light-dark(#f3eff4, #313035);
+    --md-sys-color-inverse-primary: light-dark(#cbc5ce, #1b1b1e);
+
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-shadow: #000000;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+}

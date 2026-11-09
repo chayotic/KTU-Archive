@@ -1,0 +1,25 @@
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background-color: var(--md-sys-color-surface);
+  touch-action: none;
+  transition:
+    opacity var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    visibility 0s linear var(--md-sys-motion-duration-medium2);
+}
+
+#splash-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#splash-screen > .md3-splash {
+  display: grid;
+  block-size: 100%;
+  inline-size: 100%;
+  place-items: center;
+}

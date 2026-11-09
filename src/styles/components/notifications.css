@@ -1,0 +1,80 @@
+@layer components {
+  .md3-notifications {
+    display: block;
+    padding: 0;
+    list-style: none;
+  }
+
+  .md3-notifications-page__status {
+    margin-block-start: var(--md-sys-spacing-6);
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  }
+
+  .md3-notifications--page {
+    margin-block-start: var(--md-sys-spacing-6);
+  }
+
+  .md3-notifications--page .md3-notification {
+    padding-inline: 0;
+    padding-block: var(--md-sys-spacing-5);
+    margin-block-end: var(--md-sys-spacing-3);
+  }
+
+  .md3-notifications--page .md3-notification + .md3-notification {
+    border-block-start: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .md3-notifications--page .md3-notification:last-child {
+    margin-block-end: 0;
+  }
+
+  .md3-notification {
+    display: grid;
+    gap: var(--md-sys-spacing-1);
+    padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  }
+
+  .md3-notification + .md3-notification {
+    border-block-start: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .md3-notification:first-child {
+    padding-block-start: var(--md-sys-spacing-4);
+  }
+
+  .md3-notification:last-child {
+    padding-block-end: var(--md-sys-spacing-4);
+  }
+
+  .md3-notification__date {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-small);
+    letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  }
+
+  .md3-notification__title {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-title-small);
+    letter-spacing: var(--md-sys-typescale-title-small-tracking);
+    text-wrap: pretty;
+  }
+
+  .md3-notification__body {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+    text-wrap: pretty;
+  }
+
+  .md3-notification__attachments {
+    margin-block-start: var(--md-sys-spacing-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .md3-notification__attachments::-webkit-scrollbar {
+    display: none;
+  }
+}

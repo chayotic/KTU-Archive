@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "framework": "vite",
+  "functions": {
+    "api/fetch_results.py": {
+      "maxDuration": 300
+    },
+    "api/upload.py": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/" }
+  ]
+}

@@ -1,0 +1,80 @@
+@layer components {
+  .md3-status {
+    display: flex;
+    inline-size: 100%;
+    min-block-size: 4.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: var(--md-sys-spacing-3);
+    padding-inline: var(--md-sys-spacing-6);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    background-color: transparent;
+    font: var(--md-sys-typescale-title-medium);
+    letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+  }
+
+  .md3-status[data-state='online'] {
+    color: var(--md-sys-color-success);
+  }
+
+  .md3-status[data-state='offline'] {
+    color: var(--md-sys-color-error);
+  }
+
+  .md3-status[data-state='maintenance'] {
+    color: var(--md-sys-color-warning);
+  }
+
+  .md3-status__shape {
+    flex: none;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    background-color: currentColor;
+    mask-image: var(--md3-status-shape);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    animation: md3-status-spin 8s linear infinite;
+  }
+
+  .md3-footer-card {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 4.5rem;
+    overflow: hidden;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    background-color: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+    text-align: start;
+  }
+
+  .md3-footer-card__loading {
+    display: flex;
+    align-items: center;
+    gap: var(--md-sys-spacing-3);
+    min-block-size: 4.5rem;
+    padding-inline: var(--md-sys-spacing-4);
+  }
+
+  .md3-footer-card__error {
+    display: flex;
+    align-items: center;
+    min-block-size: 4.5rem;
+    padding-inline: var(--md-sys-spacing-4);
+  }
+
+  .md3-footer-card__loader {
+    flex: none;
+    margin-inline-start: var(--md-sys-spacing-2);
+  }
+
+  @keyframes md3-status-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+}

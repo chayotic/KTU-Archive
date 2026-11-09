@@ -1,0 +1,61 @@
+@layer components {
+  .md3-suggestions {
+    position: absolute;
+    inset-block-start: calc(100% + 6px);
+    inset-inline: 0;
+    z-index: 20;
+    max-block-size: 17.5rem;
+    margin: 0;
+    padding: var(--md-sys-spacing-2) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--md-sys-shape-corner-large);
+    background-color: var(--md-sys-color-surface-container);
+    box-shadow: var(--md-sys-elevation-level2);
+    list-style: none;
+  }
+
+  .md3-suggestion {
+    display: flex;
+    align-items: center;
+    gap: var(--md-sys-spacing-3);
+    padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .md3-suggestion.is-active {
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+
+  .md3-suggestion__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-inline-size: 0;
+  }
+
+  .md3-suggestion__code {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-label-large);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  }
+
+  .md3-suggestion__name {
+    overflow: hidden;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-body-medium);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .md3-suggestion__semester {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-small);
+    letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  }
+}

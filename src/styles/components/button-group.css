@@ -1,0 +1,88 @@
+@layer components {
+  .md3-button-group {
+    --md-comp-button-group-inner-corner: 8px;
+    --md-comp-button-group-outer-corner: 28px;
+
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 2px;
+    width: 100%;
+  }
+
+  .md3-button-group__button {
+    --_corner: var(--md-comp-button-group-inner-corner);
+    --_outer-corner: var(--md-comp-button-group-outer-corner);
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 56px;
+    padding-inline: var(--md-sys-spacing-6);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--_corner);
+    color: var(--md-sys-color-on-surface-variant);
+    background-color: transparent;
+    font: var(--md-sys-typescale-title-medium);
+    letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-start-start-radius var(--md-sys-motion-duration-spatial-fast) var(--md-sys-motion-easing-spatial-fast),
+      border-start-end-radius var(--md-sys-motion-duration-spatial-fast) var(--md-sys-motion-easing-spatial-fast),
+      border-end-start-radius var(--md-sys-motion-duration-spatial-fast) var(--md-sys-motion-easing-spatial-fast),
+      border-end-end-radius var(--md-sys-motion-duration-spatial-fast) var(--md-sys-motion-easing-spatial-fast),
+      background-color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast),
+      border-color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast),
+      color var(--md-sys-motion-duration-effects-fast) var(--md-sys-motion-easing-effects-fast);
+  }
+
+  .md3-button-group__button:first-child {
+    border-start-start-radius: var(--_outer-corner);
+    border-end-start-radius: var(--_outer-corner);
+  }
+
+  .md3-button-group__button:last-child {
+    border-start-end-radius: var(--_outer-corner);
+    border-end-end-radius: var(--_outer-corner);
+  }
+
+  .md3-button-group__button.is-selected {
+    --_corner: var(--md-comp-button-group-outer-corner);
+    --_outer-corner: var(--md-comp-button-group-outer-corner);
+
+    border-color: transparent;
+    color: var(--md-sys-color-on-primary);
+    background-color: var(--md-sys-color-primary);
+  }
+
+  .md3-button-group__button:focus-visible {
+    outline: 3px solid var(--md-sys-color-on-surface);
+    outline-offset: 2px;
+  }
+
+  .md3-button-group__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 600px) {
+    .md3-button-group {
+      --md-comp-button-group-outer-corner: 36px;
+    }
+
+    .md3-button-group__button {
+      min-height: 4.5rem;
+    }
+
+    [data-home] > .md3-button-group {
+      margin-block-start: var(--md-sys-spacing-4);
+      margin-block-end: var(--md-sys-spacing-12);
+    }
+  }
+}

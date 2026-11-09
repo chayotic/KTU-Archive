@@ -1,0 +1,130 @@
+@layer components {
+  .md3-page__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--md-sys-spacing-2);
+    min-block-size: 2.75rem;
+    margin-block-end: var(--md-sys-spacing-4);
+    padding-inline: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-label-large);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .md3-page__back .material-symbols-rounded {
+    font-size: 1.25rem;
+  }
+
+  .md3-page__eyebrow {
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-medium);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+  }
+
+  .md3-page__title {
+    margin-block-start: var(--md-sys-spacing-1);
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-headline-small);
+    font-weight: var(--md-sys-typescale-emphasized-headline-small-weight);
+    letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .md3-page__code {
+    margin-block-start: var(--md-sys-spacing-1);
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-large);
+    letter-spacing: 0.0625em;
+  }
+
+  .md3-page__section {
+    margin-block-start: var(--md-sys-spacing-6);
+  }
+
+  .md3-page__section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--md-sys-spacing-2);
+    margin-block-end: var(--md-sys-spacing-3);
+  }
+
+  .md3-page__section-title {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-emphasized-title-large);
+    letter-spacing: var(--md-sys-typescale-emphasized-title-large-tracking);
+  }
+
+  [data-home] {
+    display: block;
+  }
+
+  [data-papers] {
+    display: none;
+  }
+
+  :root[data-view='papers'] [data-home] {
+    display: none;
+  }
+
+  :root[data-view='papers'] [data-papers] {
+    display: block;
+  }
+
+  [data-notifications-page],
+  [data-upload],
+  [data-donate] {
+    display: none;
+  }
+
+  [data-results] {
+    display: none;
+  }
+
+  [data-result-view] {
+    display: none;
+  }
+
+  :root[data-view='result-view'] [data-home],
+  :root[data-view='result-view'] [data-results] {
+    display: none;
+  }
+
+  :root[data-view='result-view'] [data-result-view] {
+    display: block;
+  }
+
+  :root:is(
+      [data-view='results'],
+      [data-view='notifications'],
+      [data-view='upload'],
+      [data-view='donate']
+    )
+    [data-home] {
+    display: none;
+  }
+
+  :root[data-view='donate'] [data-donate] {
+    display: block;
+  }
+
+  :root[data-view='notifications'] [data-notifications-page] {
+    display: block;
+  }
+
+  :root[data-view='upload'] [data-upload] {
+    display: block;
+  }
+
+  :root[data-view='results'] [data-results] {
+    display: block;
+  }
+
+  [data-upload] .md3-upload__modes {
+    margin-block-start: var(--md-sys-spacing-8);
+  }
+}

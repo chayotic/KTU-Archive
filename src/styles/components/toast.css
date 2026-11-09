@@ -1,0 +1,55 @@
+@layer components {
+  .md3-toast {
+    position: fixed;
+    inset-inline:
+      max(var(--md-sys-spacing-4), env(safe-area-inset-left))
+      max(var(--md-sys-spacing-4), env(safe-area-inset-right));    inset-block-end: calc(var(--md-sys-spacing-4) + env(safe-area-inset-bottom));
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    min-block-size: 4.5rem;
+    padding: var(--md-sys-spacing-3) var(--md-sys-spacing-6);
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--md-sys-color-error-container-inverse);
+    color: var(--md-sys-color-on-error-container-inverse);
+    font: var(--md-sys-typescale-body-medium);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+    text-wrap: pretty;
+    touch-action: none;
+    animation: md3-toast-in var(--md-sys-motion-duration-effects-fast)
+      var(--md-sys-motion-easing-effects-fast);
+  }
+
+  @media (min-width: 600px) {
+    .md3-toast {
+      inset-inline: max(var(--md-sys-spacing-6), calc(50% - 26.625rem));
+    }
+  }
+
+  .md3-toast[data-variant='success'] {
+    background-color: var(--md-sys-color-success-container-inverse);
+    color: var(--md-sys-color-on-success-container-inverse);
+  }
+
+  .md3-toast[data-variant='warning'] {
+    background-color: var(--md-sys-color-warning-container-inverse);
+    color: var(--md-sys-color-on-warning-container-inverse);
+  }
+
+  .md3-toast.is-dragging {
+    animation: none;
+    user-select: none;
+  }
+
+  @keyframes md3-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
