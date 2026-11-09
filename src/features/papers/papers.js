@@ -162,10 +162,38 @@ function delay(ms) {
   });
 }
 
-async function fetchBlob(url) {
+async function fetchBlob(url, onProgress) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(String(response.status));
-  return response.blob();
+  if (!response.body || !onProgress) return response.blob();
+
+  const lengthHeader = Number(response.headers.get('content-length'));
+  const total = Number.isFinite(lengthHeader) && lengthHeader > 0 ? lengthHeader : null;
+  const reader = response.body.getReader();
+  const chunks = [];
+  let received = 0;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.byteLength;
+    onProgress(received, total);
+  }
+
+  return new Blob(chunks, { type: response.headers.get('content-type') || '' });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes;
+  let unit = -1;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unit]}`;
 }
 
 function easeOutCubic(t) {
@@ -325,7 +353,6 @@ export function mountPapers(root = document) {
     download.classList.add('is-loading');
     download.disabled = true;
     const asZip = zipMode;
-    const noun = activeKind === 'notes' ? 'notes' : 'papers';
     downloadLabel.textContent = asZip
       ? 'Preparing ZIP'
       : activeKind === 'notes'
@@ -333,61 +360,76 @@ export function mountPapers(root = document) {
         : 'Preparing papers';
 
     const total = selected.length;
-    let done = 0;
     let saved = 0;
+    let completedBytes = 0;
+    let totalBytes = 0;
 
-    function report() {
-      animateProgress((done / total) * 100);
-      progressLabel.textContent = asZip
-        ? `Packaging ${done} of ${total}`
-        : `Downloading ${done} of ${total}`;
+    const sizes = await Promise.allSettled(
+      selected.map(async (input) => {
+        const head = await fetch(input.value, { method: 'HEAD' });
+        const length = Number(head.headers.get('content-length'));
+        return Number.isFinite(length) && length > 0 ? length : 0;
+      }),
+    );
+    if (sizes.every((size) => size.status === 'fulfilled' && size.value > 0)) {
+      totalBytes = sizes.reduce((sum, size) => sum + size.value, 0);
+    }
+
+    function report(currentBytes, currentTotal) {
+      const received = completedBytes + currentBytes;
+      if (totalBytes > 0) {
+        animateProgress(Math.min((received / totalBytes) * 100, 100));
+        progressLabel.textContent = `Downloading ${formatBytes(received)} of ${formatBytes(totalBytes)}`;
+      } else if (currentTotal) {
+        animateProgress(Math.min((currentBytes / currentTotal) * 100, 100));
+        progressLabel.textContent = `Downloading ${formatBytes(received)}`;
+      } else {
+        progressLabel.textContent = `Downloading ${formatBytes(received)}`;
+      }
     }
 
     progressWrap.hidden = false;
     cancelAnimationFrame(progressFrame);
     clearTimeout(progressHideTimer);
     progressBar.value = 0;
-    progressLabel.textContent = asZip
-      ? `Packaging 0 of ${total}`
-      : `Downloading 0 of ${total}`;
+    progressLabel.textContent = 'Downloading 0 B';
 
     try {
       if (asZip) {
         const files = [];
         for (const [index, input] of selected.entries()) {
           try {
-            const blob = await fetchBlob(input.value);
+            const blob = await fetchBlob(input.value, report);
+            completedBytes += blob.size;
             files.push({
               name: input.dataset.downloadName || fileName(input.value, index),
               data: new Uint8Array(await blob.arrayBuffer()),
             });
             saved += 1;
           } catch {}
-          done += 1;
-          report();
+          report(0, null);
         }
         if (files.length > 0) {
           const zipName = activeKind === 'notes' ? `${activeCode}-Notes.zip` : `${activeCode}.zip`;
           triggerDownload(createZip(files), zipName);
-          progressLabel.textContent = `ZIP ready · ${saved} of ${total} ${noun}`;
+          animateProgress(100);
+          progressLabel.textContent = `Downloaded ${formatBytes(completedBytes)}`;
         } else {
           progressLabel.textContent = 'Download failed';
         }
       } else {
         for (const [index, input] of selected.entries()) {
           try {
-            const blob = await fetchBlob(input.value);
+            const blob = await fetchBlob(input.value, report);
+            completedBytes += blob.size;
             triggerDownload(blob, input.dataset.downloadName || fileName(input.value, index));
             saved += 1;
           } catch {}
-          done += 1;
-          report();
+          report(0, null);
           if (index < total - 1) await delay(400);
         }
-        progressLabel.textContent =
-          saved === total
-            ? `Downloaded ${saved} ${noun}`
-            : `Downloaded ${saved} of ${total} ${noun}`;
+        animateProgress(100);
+        progressLabel.textContent = `Downloaded ${formatBytes(completedBytes)}`;
       }
     } finally {
       if (saved > 0) trackDownload(asZip, saved);
