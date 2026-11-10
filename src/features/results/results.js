@@ -1,12 +1,8 @@
+import { mountDisclosures } from '../../components/disclosure.js';
 import { mountSelect } from '../../components/select.js';
 import { showToast } from '../../components/toast.js';
 import { requestResults } from '../../services/results.js';
 import { navigateTo } from '../navigation/views.js';
-import {
-  clearCredentials,
-  loadCredentials,
-  saveCredentials,
-} from './credentials.js';
 import { storeResult } from './result-view.js';
 
 const SEMESTERS = Array.from({ length: 8 }, (_, index) => ({
@@ -18,6 +14,12 @@ export function mountResults() {
   const root = document.querySelector('[data-results]');
   if (!root) return;
 
+  for (const key of ['ktu_credentials', 'ktu_cred_key']) {
+    try {
+      localStorage.removeItem(key);
+    } catch {}
+  }
+
   const semesterRoot = root.querySelector('[data-results-semester]');
   if (!semesterRoot) return;
 
@@ -26,13 +28,14 @@ export function mountResults() {
   const fetchButton = root.querySelector('[data-results-fetch]');
   const fetchLabel = root.querySelector('[data-results-fetch-label]');
   const fetchLoader = root.querySelector('[data-results-loader]');
-  const saveInput = root.querySelector('[data-results-save]');
   const logs = root.querySelector('[data-results-logs]');
   const logList = root.querySelector('[data-results-log-list]');
 
   let fetching = false;
 
   const semesterSelect = mountSelect(semesterRoot, { onChange: update });
+
+  mountDisclosures(root);
 
   function update() {
     if (!fetchButton) return;
@@ -79,25 +82,6 @@ export function mountResults() {
     logList.scrollTop = logList.scrollHeight;
   }
 
-  async function persistCredentials() {
-    try {
-      if (!saveInput?.checked) {
-        clearCredentials();
-        return;
-      }
-
-      if (!register?.value.trim() || !password?.value) return;
-
-      await saveCredentials({
-        username: register.value.trim(),
-        password: password.value,
-      });
-    } catch {
-      if (saveInput) saveInput.checked = false;
-      showToast('Could not save credentials in this browser.');
-    }
-  }
-
   async function handleFetch() {
     if (fetching) return;
 
@@ -120,7 +104,6 @@ export function mountResults() {
       return;
     }
 
-    await persistCredentials();
     setLoading(true);
     resetLogs();
     appendLog('Connecting to the KTU portal');
@@ -177,40 +160,7 @@ export function mountResults() {
     handleFetch();
   });
 
-  saveInput?.addEventListener('change', async () => {
-    if (!saveInput.checked) {
-      try {
-        clearCredentials();
-      } catch {
-        return;
-      }
-      return;
-    }
-
-    if (register?.value.trim() && password?.value) {
-      try {
-        await saveCredentials({
-          username: register.value.trim(),
-          password: password.value,
-        });
-      } catch {
-        saveInput.checked = false;
-        showToast('Could not save credentials in this browser.');
-      }
-    }
-  });
-
   fetchButton?.addEventListener('click', handleFetch);
-
-  loadCredentials()
-    .then((stored) => {
-      if (!stored) return;
-      if (register) register.value = (stored.username ?? '').toUpperCase();
-      if (password) password.value = stored.password ?? '';
-      if (saveInput) saveInput.checked = Boolean(stored.username && stored.password);
-      update();
-    })
-    .catch(() => {});
 
   update();
 

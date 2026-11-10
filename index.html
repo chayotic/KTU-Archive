@@ -75,35 +75,9 @@
       }
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YB4HKZS5PS"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', 'G-YB4HKZS5PS');
-    </script>
+    <script src="/analytics.js"></script>
     <title>KTU PYQ Download, Notes & Results | KTU Archive</title>
-    <script>
-      (() => {
-        const root = document.documentElement;
-        let preference = 'system';
-        try {
-          const stored = localStorage.getItem('ktu-theme');
-          if (stored === 'light' || stored === 'dark' || stored === 'system') {
-            preference = stored;
-          }
-        } catch {
-          preference = 'system';
-        }
-        const dark =
-          preference === 'dark' ||
-          (preference === 'system' &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches);
-        root.dataset.theme = dark ? 'dark' : 'light';
-        root.dataset.themePreference = preference;
-      })();
-    </script>
+    <script src="/theme-boot.js"></script>
     <style>
       html {
         background-color: #fcfbfd;
@@ -456,32 +430,152 @@
         <div class="md3-page md3-results" data-results>
           <h1 class="md3-page__title" data-results-title tabindex="-1">Fetch KTU Results</h1>
           <div>
-          <section class="md3-about" aria-labelledby="results-about-title">
-            <h2 class="md3-about__title" id="results-about-title">About this tool</h2>
-            <p class="md3-about__body">
-              This Tool Fetches Your Semester Results Directly From The KTU
-              Portal, Also Bypasses The Gateway Timeout 504 Error Seen On The
-              Website When Results Are Published.
-            </p>
-          </section>
-          <p class="md3-results__note">
-            Note: KTU periodically requires a password change on their portal.
-            If it's been a long time since you last changed it, complete the
-            change on
-            <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
-              app.ktu.edu.in
-            </a>
-            first. Results can't be fetched until it's done.
-          </p>
-          <p class="md3-results__note">
-            Security: Your credentials are only used to authenticate with
-            <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
-              app.ktu.edu.in
-            </a>
-            and are never stored on any server. The 'Save credentials' option
-            stores them locally in your browser itself.
-          </p>
+          <div class="md3-results__info">
+            <section class="md3-disclosure" data-disclosure>
+              <h2 class="md3-disclosure__heading">
+                <button
+                  class="md3-disclosure__trigger"
+                  type="button"
+                  data-disclosure-trigger
+                  aria-expanded="true"
+                  aria-controls="results-about-panel"
+                >
+                  <span>About this tool</span>
+                  <span class="material-symbols-rounded" aria-hidden="true">remove</span>
+                </button>
+              </h2>
+              <div class="md3-disclosure__panel" id="results-about-panel">
+                <p>
+                  This tool signs in to the KTU portal and reads your semester
+                  grade card. <strong>It bypasses the 504 gateway timeout</strong>
+                  by retrying until the portal lets it through, so you do not have
+                  to refresh the site yourself. A normal fetch takes seconds, and
+                  a slow one keeps retrying for a few minutes, so leave this page
+                  open. It is an unofficial student project and is
+                  <strong>not affiliated with, endorsed by, or operated by APJ
+                  Abdul Kalam Technological University</strong>.
+                </p>
+              </div>
+            </section>
+            <section class="md3-disclosure" data-disclosure>
+              <h2 class="md3-disclosure__heading">
+                <button
+                  class="md3-disclosure__trigger"
+                  type="button"
+                  data-disclosure-trigger
+                  aria-expanded="false"
+                  aria-controls="results-security-panel"
+                >
+                  <span>Security</span>
+                  <span class="material-symbols-rounded" aria-hidden="true">add</span>
+                </button>
+              </h2>
+              <div class="md3-disclosure__panel" id="results-security-panel" hidden>
+                <p>
+                  When you tap Fetch Results, your registration number and
+                  password are sent to this site's server. The server signs in to
+                  <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
+                    app.ktu.edu.in
+                  </a>
+                  , opens the grade card page, and reads it, streaming every step
+                  back to this page, which is what you see in the log. The
+                  finished grade card opens on its own page.
+                </p>
+                <p>
+                  Your password is used once and thrown away when the request
+                  ends. It is never written to a database, a file, or a log, and
+                  this site does not save it in your browser, your session, or a
+                  cookie. The only thing kept is the grade card itself, in this
+                  tab's session storage, and it disappears when the tab closes.
+                </p>
+                <p>
+                  This project is open source, so you can check all of this
+                  yourself instead of taking our word for it. The scraper is a
+                  single file,
+                  <a
+                    href="https://github.com/chayotic/KTU-Archive/blob/main/api/fetch_results.py"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    api/fetch_results.py
+                  </a>
+                  , and it is the only place your credentials are used. The page
+                  logic lives in
+                  <a
+                    href="https://github.com/chayotic/KTU-Archive/tree/main/src/features/results"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    src/features/results
+                  </a>
+                  .
+                </p>
+                <p>
+                  Signing in from this server does mean your credentials pass
+                  through a third party host on the way to KTU. That host is
+                  Vercel, the well known cloud hosting company this site is
+                  deployed on, and it is the only third party involved. Your
+                  password exists in its memory for the length of one request and
+                  nowhere else. KTU advises students never to share their
+                  credentials, so if you would rather not, sign in on
+                  <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
+                    app.ktu.edu.in
+                  </a>
+                  yourself.
+                </p>
+              </div>
+            </section>
+            <section class="md3-disclosure" data-disclosure>
+              <h2 class="md3-disclosure__heading">
+                <button
+                  class="md3-disclosure__trigger"
+                  type="button"
+                  data-disclosure-trigger
+                  aria-expanded="false"
+                  aria-controls="results-faq-panel"
+                >
+                  <span>FAQ</span>
+                  <span class="material-symbols-rounded" aria-hidden="true">add</span>
+                </button>
+              </h2>
+              <div class="md3-disclosure__panel" id="results-faq-panel" hidden>
+                <h3 class="md3-disclosure__question">
+                  It says my credentials are wrong even though they are not.
+                </h3>
+                <p>
+                  KTU periodically forces a password change on the portal. If it
+                  has been a while since you last changed yours, complete the
+                  change on
+                  <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
+                    app.ktu.edu.in
+                  </a>
+                  first. Until then the portal rejects the login, and this tool
+                  reports it the same way it reports a wrong password.
+                </p>
+                <h3 class="md3-disclosure__question">
+                  It stopped partway.
+                </h3>
+                <p>
+                  Most fetches finish in a few seconds. When KTU's portal is
+                  struggling, the tool keeps retrying for up to about five minutes
+                  before it gives up. Nothing is saved when a fetch fails, so
+                  starting again is safe.
+                </p>
+                <h3 class="md3-disclosure__question">
+                  It says too many requests.
+                </h3>
+                <p>
+                  The site caps how many fetches can start from the same internet
+                  connection every minute. If several people are fetching through
+                  one connection at the same time, or you tapped a few times
+                  quickly, the extra attempts are turned away. Nothing is blocked
+                  for good, so wait a minute and try again.
+                </p>
+              </div>
+            </section>
+          </div>
           <div class="md3-results__form">
+            <h2 class="md3-results__form-title">Fetch KTU Results</h2>
             <div class="beer md3-field md3-results__field">
               <div class="field label suffix border">
                 <input
@@ -494,6 +588,7 @@
                   autocapitalize="characters"
                   spellcheck="false"
                   data-results-register
+                  disabled
                 />
                 <label for="results-register">KTU Registration Number</label>
                 <i aria-hidden="true">id_card</i>
@@ -509,6 +604,7 @@
                   aria-label="Password"
                   autocomplete="current-password"
                   data-results-password
+                  disabled
                 />
                 <label for="results-password">Password</label>
                 <i aria-hidden="true">key</i>
@@ -523,6 +619,7 @@
                   aria-haspopup="listbox"
                   aria-controls="results-semester-menu"
                   aria-expanded="false"
+                  disabled
                 >
                   <span data-select-label>Select Semester</span>
                   <i aria-hidden="true">arrow_drop_down</i>
@@ -534,15 +631,6 @@
                 ></menu>
               </div>
             </div>
-            <label class="md3-results__save">
-              <input id="results-save" type="checkbox" data-results-save />
-              <span class="md3-results__save-box" aria-hidden="true">
-                <svg viewBox="0 0 12 10" focusable="false">
-                  <path d="M1 5.2 4.3 8.5 11 1.5" />
-                </svg>
-              </span>
-              <span>Save credentials</span>
-            </label>
             <button
               class="md3-search-button md3-results__fetch"
               type="button"
@@ -559,6 +647,18 @@
               </span>
               <span data-results-fetch-label>Fetch Results</span>
             </button>
+            <div class="md3-results__notice">
+              <p>
+                This tool is temporarily unavailable because KTU has added
+                Cloudflare Turnstile protection to its portal, which requires
+                manual interaction that this tool cannot perform. We are looking
+                into a way to restore it. In the meantime, please use
+                <a href="https://app.ktu.edu.in/" target="_blank" rel="noopener noreferrer">
+                  app.ktu.edu.in
+                </a>
+                directly to check your results.
+              </p>
+            </div>
           </div>
           <div
             class="md3-results__logs"

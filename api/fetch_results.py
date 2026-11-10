@@ -38,7 +38,7 @@ HEADERS = {
 TOKEN_SECRET = (
     os.environ.get("TOKEN_SECRET")
     or os.environ.get("VERCEL_URL")
-    or "ktu-archive-results-token"
+    or secrets.token_hex(32)
 )
 RATE_LIMIT_HITS = defaultdict(list)
 
@@ -310,12 +310,12 @@ def _client_ip(handler):
     return handler.client_address[0]
 
 
-def _rate_limited(ip, bucket, max_requests, window):
-    key = f"{bucket}:{ip}"
+def _rate_limited(key, max_requests, window):
     now = time.time()
-    hits = [hit for hit in RATE_LIMIT_HITS[key] if now - hit < window]
+    hits = [hit for hit in RATE_LIMIT_HITS.get(key, ()) if now - hit < window]
 
     if len(hits) >= max_requests:
+        RATE_LIMIT_HITS[key] = hits
         return True
 
     hits.append(now)
@@ -392,7 +392,7 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         ip = _client_ip(self)
-        if _rate_limited(ip, "token", max_requests=20, window=60):
+        if _rate_limited(f"token:{ip}", max_requests=20, window=60):
             self._respond(429, {"success": False, "error": "Too many requests"})
             return
 
@@ -401,7 +401,7 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         ip = _client_ip(self)
 
-        if _rate_limited(ip, "results", max_requests=8, window=60):
+        if _rate_limited(f"results:{ip}", max_requests=20, window=60):
             self._respond(429, {"success": False, "error": "Too many requests"})
             return
 

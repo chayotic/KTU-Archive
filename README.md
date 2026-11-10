@@ -6,6 +6,8 @@
 
 <h1 align="center" style="border-bottom: none;">KTU Archive</h1>
 
+<br>
+
 <div align="center">
   <img src="public/assets/readme/maintenance.svg" width="224" height="48" alt="Maintenance" />
   <img src="public/assets/readme/scheme.svg" width="185" height="48" alt="2024 Scheme" />
@@ -18,6 +20,8 @@
 ## KTU PYQ & Notes Downloader
 
 Download **2024 Scheme** Previous Year Question Papers & Module-Wise Notes for APJ Abdul Kalam Technological University (KTU). Pick a semester and subject, select papers or notes, and download them one by one or as a ZIP.
+
+**This project is not affiliated with, endorsed by, or operated by APJ Abdul Kalam Technological University (KTU).**
 
 ## Services
 
