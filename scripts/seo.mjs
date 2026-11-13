@@ -75,6 +75,22 @@ const routes = [
     changefreq: 'monthly',
   },
   {
+    path: '/terms',
+    title: 'Terms of Use | KTU Archive',
+    description:
+      'Terms of Use for KTU Archive, an unofficial student project for KTU previous year question papers, notes and results. Not affiliated with KTU.',
+    priority: '0.2',
+    changefreq: 'yearly',
+  },
+  {
+    path: '/privacy',
+    title: 'Privacy Policy | KTU Archive',
+    description:
+      'Privacy Policy for KTU Archive, covering Google Analytics usage, how credentials are handled for the results tool, and what is stored in your browser.',
+    priority: '0.2',
+    changefreq: 'yearly',
+  },
+  {
     path: '/notes',
     title: 'KTU Notes Download | KTU Archive',
     description:

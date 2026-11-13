@@ -77,7 +77,9 @@
 
   [data-notifications-page],
   [data-upload],
-  [data-donate] {
+  [data-donate],
+  [data-terms],
+  [data-privacy] {
     display: none;
   }
 
@@ -102,10 +104,20 @@
       [data-view='results'],
       [data-view='notifications'],
       [data-view='upload'],
-      [data-view='donate']
+      [data-view='donate'],
+      [data-view='terms'],
+      [data-view='privacy']
     )
     [data-home] {
     display: none;
+  }
+
+  :root[data-view='terms'] [data-terms] {
+    display: block;
+  }
+
+  :root[data-view='privacy'] [data-privacy] {
+    display: block;
   }
 
   :root[data-view='donate'] [data-donate] {

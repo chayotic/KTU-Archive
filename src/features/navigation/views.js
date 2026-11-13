@@ -7,6 +7,8 @@ const VIEWS = {
   notifications: { path: '/notifications', title: 'KTU Notifications' },
   upload: { path: '/upload', title: 'Upload Documents' },
   donate: { path: '/donate', title: 'Donate' },
+  terms: { path: '/terms', title: 'Terms of Use' },
+  privacy: { path: '/privacy', title: 'Privacy Policy' },
 };
 
 let navigateToView = null;
@@ -35,7 +37,19 @@ export function mountViews(root = document) {
   const resultViewTitle = root.querySelector('[data-result-view-title]');
   const notificationsTitle = root.querySelector('[data-notifications-page-title]');
   const uploadTitle = root.querySelector('[data-upload-title]');
+  const termsTitle = root.querySelector('[data-terms-title]');
+  const privacyTitle = root.querySelector('[data-privacy-title]');
   const homeTitle = root.querySelector('[data-home-title]');
+  const titles = {
+    archive: homeTitle,
+    results: resultsTitle,
+    'result-view': resultViewTitle,
+    notifications: notificationsTitle,
+    upload: uploadTitle,
+    donate: donateTitle,
+    terms: termsTitle,
+    privacy: privacyTitle,
+  };
   const links = [...root.querySelectorAll('[data-view-link]')];
 
   function paintActive(view) {
@@ -69,18 +83,7 @@ export function mountViews(root = document) {
   }
 
   function focusView(view, delay) {
-    const target =
-      view === 'archive'
-        ? homeTitle
-        : view === 'results'
-          ? resultsTitle
-          : view === 'result-view'
-            ? resultViewTitle
-            : view === 'notifications'
-              ? notificationsTitle
-              : view === 'upload'
-                ? uploadTitle
-                : donateTitle;
+    const target = titles[view] || homeTitle;
     if (!target) return;
 
     window.setTimeout(() => target.focus({ preventScroll: true }), delay);

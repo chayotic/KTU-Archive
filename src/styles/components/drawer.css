@@ -117,4 +117,24 @@
     block-size: 24px;
     fill: currentColor;
   }
+
+  .md3-drawer__footer {
+    margin-block-start: auto;
+    padding: var(--md-sys-spacing-6) var(--md-sys-spacing-6) var(--md-sys-spacing-2);
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+    font: var(--md-sys-typescale-label-medium);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+  }
+
+  .md3-drawer__legal {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .md3-drawer__legal-separator {
+    margin-inline: var(--md-sys-spacing-2);
+    color: var(--md-sys-color-outline);
+  }
 }

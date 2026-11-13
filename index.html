@@ -242,6 +242,11 @@
             </li>
           </ul>
         </nav>
+        <div class="md3-drawer__footer">
+          <a class="md3-drawer__legal" href="/terms" data-view-link="terms">Terms of Use</a>
+          <span class="md3-drawer__legal-separator" aria-hidden="true">|</span>
+          <a class="md3-drawer__legal" href="/privacy" data-view-link="privacy">Privacy Policy</a>
+        </div>
       </aside>
     </div>
     <div id="app">
@@ -628,7 +633,7 @@
                   id="results-semester-menu"
                   role="listbox"
                   aria-label="Semester"
-                ></menu>
+x                ></menu>
               </div>
             </div>
             <button
@@ -821,6 +826,160 @@
               The UPI ID is for direct transfers. Tap it to copy.
             </p>
           </section>
+        </div>
+        <div class="md3-page md3-legal" data-terms>
+          <h1 class="md3-page__title" data-terms-title tabindex="-1">Terms of Use</h1>
+          <p class="md3-legal__updated">Last updated 12 November 2026</p>
+
+          <h2 class="md3-legal__heading">Not affiliated with KTU</h2>
+          <p class="md3-legal__body">
+            KTU Archive is an unofficial student project. It is not operated by,
+            endorsed by, or affiliated with APJ Abdul Kalam Technological
+            University (KTU).
+          </p>
+
+          <h2 class="md3-legal__heading">Using the archive</h2>
+          <p class="md3-legal__body">
+            Question papers and notes on this site belong to their respective
+            authors and publishers. This site only shares files that are
+            already publicly available and does not claim ownership of any
+            academic content.
+          </p>
+
+          <h2 class="md3-legal__heading">Fetch KTU Results</h2>
+          <p class="md3-legal__body">
+            Fetch KTU Results is a separate tool on this site that signs in to
+            the KTU portal on your behalf. Your registration number and password
+            are sent to this site's server so it can sign in for you. They are
+            used once for that request and are not stored in a database, file,
+            or log.
+          </p>
+
+          <h2 class="md3-legal__heading">Uploads</h2>
+          <p class="md3-legal__body">
+            If you upload a file, you confirm that you have the right to share
+            it. Uploaded files are held for review and may be rejected or
+            removed at any time without explanation. Uploading a file does not
+            make it public automatically.
+          </p>
+          
+          <h2 class="md3-legal__heading">Changes to these terms</h2>
+          <p class="md3-legal__body">
+            We may update these Terms of Use at any time without prior notice.
+            The date at the top of the page shows when they were last changed.
+            Continuing to use the site after a change means you accept the
+            updated terms.
+          </p>
+        </div>
+        <div class="md3-page md3-legal" data-privacy>
+          <h1 class="md3-page__title" data-privacy-title tabindex="-1">Privacy Policy</h1>
+          <p class="md3-legal__updated">Last updated 12 November 2026</p>
+          <p class="md3-legal__body">
+            KTU Archive is an unofficial student project and is not affiliated with APJ Abdul
+            Kalam Technological University. This policy explains what information the site handles, 
+            why it is handled, and the choices you have.
+          </p>
+
+          <h2 class="md3-legal__heading">1. Information we handle</h2>
+          <p class="md3-legal__body">
+            The site has no accounts and no sign up, so it does not collect
+            names, email addresses, or phone numbers. The only information it
+            handles falls into three groups:
+          </p>
+          <ul class="md3-legal__list">
+            <li>Anonymous usage data from Google Analytics.</li>
+            <li>Your KTU registration number and password, which you type into the results tool and which are never stored.</li>
+            <li>Files you choose to upload, together with the filename and semester you provide.</li>
+          </ul>
+
+          <h2 class="md3-legal__heading">2. Analytics</h2>
+          <p class="md3-legal__body">
+            The site uses Google Analytics 4 to understand how the archive and
+            the other tools are used, and to see which papers and notes attract
+            the most traffic. It records:
+          </p>
+          <ul class="md3-legal__list">
+            <li>Pages viewed and the time spent on them.</li>
+            <li>Approximate location derived from your IP address, browser, and device type.</li>
+            <li>Download events, which record the subject, subject code, material type and whether the paper(s) were zipped or not.</li>
+          </ul>
+          <p class="md3-legal__body">
+            This data is anonymous and is used to improve the site. Google
+            processes it as described in Google's own privacy policy.
+          </p>
+
+          <h2 class="md3-legal__heading">3. Fetch KTU Results</h2>
+          <p class="md3-legal__body">
+            When you use the Fetch KTU Results tool, your registration number
+            and password are sent to this site's server so it can sign in to the
+            KTU portal and read your grade card. They are used once for that
+            request and are never stored anywhere.
+          </p>
+
+          <h2 class="md3-legal__heading">4. Uploads</h2>
+          <p class="md3-legal__body">
+            If you contribute a question paper or notes, the PDF is sent to the
+            site's storage and held in a pending area for review. The filename
+            and the semester you select are stored with it and may be visible to
+            whoever reviews the file. Uploads are not public until a person
+            approves them.
+          </p>
+
+          <h2 class="md3-legal__heading">5. Data security</h2>
+          <p class="md3-legal__body">
+            The site is served over HTTPS. The results tool keeps your
+            credentials in the server's memory only for the length of one
+            request, and they are never written to disk, a database, or a log.
+            The site has no accounts and stores no profile.
+          </p>
+
+          <h2 class="md3-legal__heading">6. Third parties</h2>
+          <p class="md3-legal__body">
+            The site relies on the following services, each of which processes
+            only what is needed for it to work:
+          </p>
+          <ul class="md3-legal__list">
+            <li><strong>Google Analytics</strong> for usage measurement.</li>
+            <li><strong>Vercel</strong> for hosting and for the server that handles the results and upload requests. Credentials pass through Vercel on their way to KTU.</li>
+            <li><strong>Supabase</strong> for storing the paper catalog, notes, and pending uploads.</li>
+            <li><strong>The KTU portal</strong>, which receives the sign in request when you use the results tool.</li>
+          </ul>
+          <p class="md3-legal__body">
+            We do not sell your personal information and do not share it with
+            anyone for advertising.
+          </p>
+
+          <h2 class="md3-legal__heading">7. How long information is kept</h2>
+          <ul class="md3-legal__list">
+            <li>Analytics data is kept for the retention period configured in Google Analytics.</li>
+            <li>Uploads are kept until they are reviewed, and after that either published or removed.</li>
+            <li>Your fetched grade card stays in your browser only until the tab closes.</li>
+            <li>Credentials are never stored, so there is nothing to delete.</li>
+          </ul>
+
+          <h2 class="md3-legal__heading">8. Your choices</h2>
+          <ul class="md3-legal__list">
+            <li>You can use the archive without using the results tool or uploading anything.</li>
+            <li>You can clear the theme and grade card entries at any time from your browser's site data settings.</li>
+            <li>You can block Google Analytics with a browser extension or content blocker without losing any archive feature.</li>
+            <li>If you want an uploaded file removed, contact us with the filename.</li>
+          </ul>
+
+          <h2 class="md3-legal__heading">9. Changes to this policy</h2>
+          <p class="md3-legal__body">
+            We may update this Privacy Policy at any time without prior notice.
+            The date at the top of the page shows when it was last changed.
+            Continuing to use the site after a change means you accept the
+            updated terms.
+          </p>
+
+          <h2 class="md3-legal__heading">10. Contact</h2>
+          <p class="md3-legal__body">
+            Questions about this policy can be sent by
+            <a class="md3-legal__link" href="mailto:rohithrpai07@proton.me">Email</a>
+            or raised in the project's
+            <a class="md3-legal__link" href="https://github.com/chayotic/KTU-Archive" target="_blank" rel="noopener noreferrer">GitHub repository</a>.
+          </p>
         </div>
       </main>
     </div>

@@ -401,7 +401,7 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         ip = _client_ip(self)
 
-        if _rate_limited(f"results:{ip}", max_requests=20, window=60):
+        if _rate_limited(f"results:{ip}", max_requests=8, window=60):
             self._respond(429, {"success": False, "error": "Too many requests"})
             return
 
