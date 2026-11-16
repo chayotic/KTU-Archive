@@ -189,7 +189,8 @@ export async function mountFilters(root = document) {
 
   function warmDestination() {
     return document.fonts
-      .load('400 24px "Material Symbols Rounded"', 'download description')
+      .load('400 24px "Material Symbols Rounded"', 'download')
+      .then(() => document.fonts.load('400 24px "Material Symbols Outlined"', 'visibility'))
       .then(() => document.fonts.load('400 16px "Google Sans Flex"'))
       .then(() => document.fonts.ready)
       .catch(() => {});

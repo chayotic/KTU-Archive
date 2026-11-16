@@ -67,6 +67,19 @@
     display: none;
   }
 
+  [data-preview] {
+    display: none;
+  }
+
+  :root[data-view='preview'] [data-home],
+  :root[data-view='preview'] [data-papers] {
+    display: none;
+  }
+
+  :root[data-view='preview'] [data-preview] {
+    display: block;
+  }
+
   :root[data-view='papers'] [data-home] {
     display: none;
   }

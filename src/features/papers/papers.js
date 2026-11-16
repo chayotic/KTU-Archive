@@ -35,7 +35,7 @@ function paperMeta(title) {
   };
 }
 
-function createPaper(paper, kind, code, index) {
+function createPaper(paper, kind, code, index, subjectName, semester) {
   const notes = kind === 'notes';
   const meta = notes
     ? {
@@ -104,13 +104,30 @@ function createPaper(paper, kind, code, index) {
     moduleLabel.className = 'md3-paper__module';
     moduleLabel.textContent = `M${moduleNumber}`;
     item.append(moduleLabel);
-  } else if (!notes) {
-    const icon = document.createElement('span');
-    icon.className = 'material-symbols-rounded md3-paper__icon';
-    icon.setAttribute('aria-hidden', 'true');
-    icon.textContent = 'description';
-    item.append(icon);
   }
+
+  const preview = document.createElement('button');
+  preview.type = 'button';
+  preview.className = 'material-symbols-outlined md3-paper__preview';
+  preview.textContent = 'visibility';
+  preview.setAttribute('aria-label', `Preview ${described}`);
+  preview.addEventListener('click', (event) => {
+    event.stopPropagation();
+    document.dispatchEvent(
+      new CustomEvent('paperspreview', {
+        bubbles: true,
+        detail: {
+          url: paper.url,
+          title: described,
+          code,
+          semester,
+          subjectName,
+          kind: notes ? 'notes' : 'pyq',
+        },
+      }),
+    );
+  });
+  item.append(preview);
 
   item.addEventListener('click', (event) => {
     const target = event.target;
@@ -246,6 +263,8 @@ export function mountPapers(root = document) {
   let openToken = 0;
   let progressFrame = 0;
   let progressHideTimer = 0;
+  let lastRenderedKey = '';
+  let lastTitle = '';
 
   function trackDownload(zip, count) {
     if (typeof window.gtag !== 'function' || count <= 0) return;
@@ -460,6 +479,7 @@ export function mountPapers(root = document) {
       subjectName === activeCode
         ? `${activeCode} · ${label}`
         : `${subjectName} (${activeCode}) · ${label}`;
+    lastTitle = document.title;
 
     const seen = new Set();
     const uniqueItems = (Array.isArray(items) ? items : []).filter((item) => {
@@ -483,20 +503,33 @@ export function mountPapers(root = document) {
     const list = document.createElement('ul');
     list.className = 'md3-paper-list';
     uniqueItems.forEach((item, index) =>
-      list.append(createPaper(item, kind, activeCode, index)),
+      list.append(createPaper(item, kind, activeCode, index, subjectName, activeSemester)),
     );
     card.replaceChildren(list);
+    lastRenderedKey = `${activeSemester}|${activeCode}|${activeKind}`;
     showActions(true, true);
     updateSelection();
   }
 
-  function show(route) {
+  function show(route, fromHistory = false) {
     const { semester, code: subjectCode, subjectName: routeName } = route;
     const notes = route.kind === 'notes';
 
     activeCode = subjectCode;
     activeSemester = semester;
     activeKind = notes ? 'notes' : 'pyq';
+
+    if (
+      fromHistory &&
+      lastRenderedKey === `${semester}|${subjectCode}|${activeKind}` &&
+      card.querySelector('.md3-paper-list')
+    ) {
+      document.documentElement.dataset.view = 'papers';
+      document.title = lastTitle;
+      window.scrollTo({ top: 0, left: 0 });
+      return;
+    }
+
     const token = ++openToken;
 
     back.href = selectionPath(semester, subjectCode, activeKind);
@@ -567,6 +600,8 @@ export function mountPapers(root = document) {
 
   function hide() {
     openToken += 1;
+    lastRenderedKey = '';
+    lastTitle = '';
     document.documentElement.dataset.view = '';
     document.title = 'KTU Archive';
     window.scrollTo({ top: 0, left: 0 });
@@ -588,7 +623,7 @@ export function mountPapers(root = document) {
 
   window.addEventListener('popstate', (event) => {
     if (event.state?.ktuView === 'papers') {
-      show(event.state.route);
+      show(event.state.route, true);
     } else if (!event.state?.ktuView) {
       hide();
     }

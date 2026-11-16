@@ -10,6 +10,7 @@ import { mountStatus } from './features/archive/status.js';
 import { mountNotifications } from './features/notifications/notifications.js';
 import { initSplash } from './core/splash.js';
 import { mountPapers } from './features/papers/papers.js';
+import { mountPreview } from './features/papers/preview.js';
 import { readSelection, selectionPath } from './features/archive/paths.js';
 import { getMode, setMode } from './features/archive/mode.js';
 import { mountViews } from './features/navigation/views.js';
@@ -73,6 +74,7 @@ mountDrawer();
 mountToast();
 
 const papersPanel = mountPapers();
+const previewPanel = mountPreview();
 mountViews();
 mountResults();
 mountResultView();
@@ -85,6 +87,10 @@ document.addEventListener('papersopen', (event) => {
 
 document.addEventListener('notesopen', (event) => {
   papersPanel?.open({ ...event.detail, kind: 'notes' });
+});
+
+document.addEventListener('paperspreview', (event) => {
+  previewPanel?.open(event.detail);
 });
 
 mountButtonGroup(getMode());
