@@ -2,6 +2,7 @@
   "name": "ktu-archive",
   "version": "2.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "KTU Archive redesign built on Material 3 Expressive.",
   "scripts": {
